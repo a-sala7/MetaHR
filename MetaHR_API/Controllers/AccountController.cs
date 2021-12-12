@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models.Commands;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,17 +28,22 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string firstName, string lastName, string email, string password)
+        public async Task<IActionResult> Register(RegisterCommand cmd)
         {
             var user = new ApplicationUser
             {
-                FirstName = firstName,
-                LastName = lastName,
-                UserName = email,
-                Email = email,
+                FirstName = cmd.FirstName,
+                LastName = cmd.LastName,
+                UserName = cmd.Email,
+                Email = cmd.Email,
             };
-            var result = await _userManager.CreateAsync(user, password);
-            return Ok(result);
+            var identityResult = await _userManager.CreateAsync(user, cmd.Password);
+            if (identityResult.Succeeded)
+            {
+                return Ok(CommandResult.SuccessResult);
+            }
+            var identityErrors = identityResult.Errors.Select(e => e.Description);
+            return BadRequest(CommandResult.GetErrorResult(identityErrors));
         }
     }
 }
