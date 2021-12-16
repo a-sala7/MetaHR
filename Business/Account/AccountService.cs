@@ -96,6 +96,7 @@ namespace Business.Account
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                EmailConfirmed = user.EmailConfirmed
             };
         }
 
