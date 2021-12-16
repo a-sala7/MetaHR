@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.Commands
+namespace Models.Responses
 {
     public class CommandResult
     {

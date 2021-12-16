@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models.Responses;
 using Models.Commands;
+using Models.Commands.Account;
+using Business.Account;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,38 +16,46 @@ namespace MetaHR_API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<ApplicationUser> userManager)
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
+            _accountService = accountService;
         }
 
         // GET: api/<AccountController>
         [HttpGet]
-        public async Task<IActionResult> Get(string email)
+        [Authorize]
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _accountService.GetUserByEmail(email);
+            if(user is null)
+            {
+                return NotFound();
+            }
             return Ok(user);
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterCommand cmd)
         {
-            var user = new ApplicationUser
+            var result = await _accountService.Register(cmd);
+            if (result.IsSuccessful)
             {
-                FirstName = cmd.FirstName,
-                LastName = cmd.LastName,
-                UserName = cmd.Email,
-                Email = cmd.Email,
-            };
-            var identityResult = await _userManager.CreateAsync(user, cmd.Password);
-            if (identityResult.Succeeded)
-            {
-                return Ok(CommandResult.SuccessResult);
+                return Ok(result);
             }
-            var identityErrors = identityResult.Errors.Select(e => e.Description);
-            return BadRequest(CommandResult.GetErrorResult(identityErrors));
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginCommand cmd)
+        {
+            var loginResponse = await _accountService.Login(cmd);
+            if (loginResponse.IsSuccessful)
+            {
+                return Ok(loginResponse);
+            }
+            return BadRequest(loginResponse);
         }
     }
 }

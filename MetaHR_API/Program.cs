@@ -1,6 +1,12 @@
+using Business.Account;
+using Common.ConfigurationClasses;
 using DataAccess.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +20,29 @@ builder.Services.AddControllers()
    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Valid format: \"bearer <token>\"",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    o.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme
+            {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+            },
+            new string[] { }
+        }
+    });
+});
 
 string dbConString = builder.Configuration.GetValue<string>("METAHR_DB_CONSTRING");
 
@@ -23,8 +51,42 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(dbConString);
 });
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+var apiConfiguration = builder.Configuration.GetSection("METAHR_API_CONFIGURATION").Get<ApiConfiguration>();
+
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(opt =>
+    {
+        byte[] keyBytes = Encoding.ASCII.GetBytes(apiConfiguration.SecretKey);
+        opt.RequireHttpsMetadata = false;
+        opt.SaveToken = true;
+        opt.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidIssuer = apiConfiguration.ValidIssuer,
+            ValidAudience = apiConfiguration.ValidAudience,
+            ClockSkew = TimeSpan.Zero,
+        };
+    });
+
+builder.Services.AddSingleton(apiConfiguration);
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 

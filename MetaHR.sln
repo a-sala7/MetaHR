@@ -9,7 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{1E6F3B71-9BCD-4BFE-A362-D21EAD8A5EB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{8E723754-852E-4FBC-B23E-7A047891D187}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{8E723754-852E-4FBC-B23E-7A047891D187}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD34E6DD-86E9-44B8-BFEA-F7F5659E5802}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{5C74E973-E3D4-4512-8179-92DB42B6468D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +40,10 @@ Global
 		{8E723754-852E-4FBC-B23E-7A047891D187}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E723754-852E-4FBC-B23E-7A047891D187}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E723754-852E-4FBC-B23E-7A047891D187}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C74E973-E3D4-4512-8179-92DB42B6468D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C74E973-E3D4-4512-8179-92DB42B6468D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C74E973-E3D4-4512-8179-92DB42B6468D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C74E973-E3D4-4512-8179-92DB42B6468D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
