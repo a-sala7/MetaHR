@@ -38,7 +38,7 @@ namespace Business.Account
                 return LoginResponse.ErrorResponse($"User with email {cmd.Email} not found.");
             }
             var signInResult = await _signInManager.PasswordSignInAsync
-                (user, cmd.Password, isPersistent: true, lockoutOnFailure: false);
+                (user, cmd.Password, isPersistent: true, lockoutOnFailure: true);
 
             if(signInResult.Succeeded)
             {
@@ -60,9 +60,13 @@ namespace Business.Account
                 //error messages for each case
                 return LoginResponse.ErrorResponse("Your account is not yet confirmed.");
             }
+            else if (signInResult.IsLockedOut)
+            {
+                return LoginResponse.ErrorResponse("You have entered an invalid password too many times. Please try again in 5 minutes.");
+            }
             else
             {
-                return LoginResponse.ErrorResponse("Invalid password.");
+                return LoginResponse.ErrorResponse($"Invalid password, you have {5 - user.AccessFailedCount} attempts remaining.");
             }
         }
 
@@ -136,7 +140,7 @@ namespace Business.Account
                 issuer: _apiConfiguration.ValidIssuer,
                 audience: _apiConfiguration.ValidAudience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(7)
+                expires: DateTime.UtcNow.AddDays(14)
             );
 
             var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);

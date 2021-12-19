@@ -57,6 +57,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
+    //lockout defaults
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -82,6 +85,8 @@ builder.Services.AddAuthentication(opt =>
             ValidIssuer = apiConfiguration.ValidIssuer,
             ValidAudience = apiConfiguration.ValidAudience,
             ClockSkew = TimeSpan.Zero,
+            ValidateLifetime = true,
+            RequireExpirationTime = true
         };
     });
 
