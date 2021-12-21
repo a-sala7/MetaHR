@@ -88,20 +88,22 @@ namespace Business.Account
             return CommandResult.GetErrorResult(identityErrors);
         }
 
-        public async Task<ApplicationUserDTO> GetUserByEmail(string email)
+        public async Task<ApplicationUser> GetUserByEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
                 return null;
 
-            return new ApplicationUserDTO
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                EmailConfirmed = user.EmailConfirmed
-            };
+            return user;
+
+            //return new ApplicationUserDTO
+            //{
+            //    Id = user.Id,
+            //    Email = user.Email,
+            //    FirstName = user.FirstName,
+            //    LastName = user.LastName,
+            //    EmailConfirmed = user.EmailConfirmed
+            //};
         }
 
         private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
