@@ -1,4 +1,5 @@
 using Business.Accounts;
+using Business.JobPostings;
 using Common.ConfigurationClasses;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -105,6 +106,7 @@ builder.Services.AddAuthentication(opt =>
 
 builder.Services.AddSingleton(apiConfiguration);
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

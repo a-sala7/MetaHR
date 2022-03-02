@@ -1,4 +1,6 @@
-﻿using DataAccess.Data;
+﻿using AutoMapper;
+using DataAccess.Data;
+using Microsoft.EntityFrameworkCore;
 using Models.Commands.JobPostings;
 using Models.DTOs;
 using Models.Responses;
@@ -13,35 +15,80 @@ namespace Business.JobPostings
     public class JobPostingRepository : IJobPostingRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly IMapper _mapper;
 
-        public JobPostingRepository(ApplicationDbContext db)
+        public JobPostingRepository(ApplicationDbContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
 
-        public Task<IEnumerable<JobPostingDTO>> GetAll()
+        public async Task<IEnumerable<JobPostingDTO>> GetAll()
         {
-            throw new NotImplementedException();
+            var jobPostings = await _db.JobPostings.ToListAsync();
+            return 
+                _mapper.Map
+                <IEnumerable<JobPosting>, IEnumerable<JobPostingDTO>>
+                (jobPostings);
         }
 
-        public Task<JobPostingDTO> GetById(int id)
+        public async Task<JobPostingDTO> GetById(int id)
         {
-            throw new NotImplementedException();
+            JobPosting jp = await _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == id);
+            return _mapper.Map<JobPosting, JobPostingDTO>(jp);
         }
 
-        public Task<CommandResult> Add(AddJobPostingCommand cmd)
+        public async Task<CommandResult> Add(AddJobPostingCommand cmd)
         {
-            throw new NotImplementedException();
+            var newJp = new JobPosting()
+            {
+                Title = cmd.Title,
+                DescriptionHtml = cmd.DescriptionHtml,
+                Category = cmd.Category
+            };
+            _db.JobPostings.Add(newJp);
+            if (await _db.SaveChangesAsync() > 0)
+            {
+                return CommandResult.SuccessResult;
+            }
+            return CommandResult.UnknownInternalErrorResult;
         }
 
-        public Task<CommandResult> Update(UpdateJobPostingCommand cmd)
+        public async Task<CommandResult> Update(int id, UpdateJobPostingCommand cmd)
         {
-            throw new NotImplementedException();
+            JobPosting jpInDb = await _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == id);
+            if(jpInDb == null)
+            {
+                return CommandResult.GetNotFoundResult
+                    ($"Job posting with ID: {id} not found.");
+            }
+
+            _mapper.Map(cmd, jpInDb);
+            _db.JobPostings.Update(jpInDb);
+
+            if (await _db.SaveChangesAsync() > 0)
+            {
+                return CommandResult.SuccessResult;
+            }
+            return CommandResult.UnknownInternalErrorResult;
         }
 
-        public Task<CommandResult> Delete(int id)
+        public async Task<CommandResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            JobPosting jpInDb = await _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == id);
+            if (jpInDb == null)
+            {
+                return CommandResult.GetNotFoundResult
+                    ($"Job posting with ID: {id} not found.");
+            }
+
+            _db.JobPostings.Remove(jpInDb);
+
+            if (await _db.SaveChangesAsync() > 0)
+            {
+                return CommandResult.SuccessResult;
+            }
+            return CommandResult.UnknownInternalErrorResult;
         }
     }
 }

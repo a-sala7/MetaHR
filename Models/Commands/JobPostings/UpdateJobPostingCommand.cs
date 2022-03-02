@@ -8,6 +8,5 @@ namespace Models.Commands.JobPostings
 {
     public class UpdateJobPostingCommand : AddJobPostingCommand
     {
-        public int JobPostingId { get; set; }
     }
 }
