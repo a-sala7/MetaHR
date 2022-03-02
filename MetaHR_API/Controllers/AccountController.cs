@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Models.Responses;
 using Models.Commands;
 using Models.Commands.Account;
-using Business.Account;
+using Business.Accounts;
 using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -48,7 +48,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginCommand cmd)
+        public async Task<IActionResult> Login([FromBody] LoginCommand cmd)
         {
             var loginResponse = await _accountService.Login(cmd);
             if (loginResponse.IsSuccessful)

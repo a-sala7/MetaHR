@@ -1,4 +1,4 @@
-using Business.Account;
+using Business.Accounts;
 using Common.ConfigurationClasses;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +49,7 @@ string dbConString = builder.Configuration.GetValue<string>("METAHR_DB_CONSTRING
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(dbConString);
+    options.EnableSensitiveDataLogging(true);
 });
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -64,6 +65,18 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var apiConfiguration = builder.Configuration.GetSection("METAHR_API_CONFIGURATION").Get<ApiConfiguration>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "CORSAllowAll",
+        policyBuilder =>
+        {
+            policyBuilder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 builder.Services.AddAuthentication(opt =>
 {
@@ -93,13 +106,18 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddSingleton(apiConfiguration);
 builder.Services.AddScoped<IAccountService, AccountService>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 var app = builder.Build();
+
+app.UseCors("CORSAllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+  
 }
 
 app.UseHttpsRedirection();

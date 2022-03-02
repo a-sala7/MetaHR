@@ -14,7 +14,7 @@ using Models.Commands.Account;
 using System.IdentityModel.Tokens.Jwt;
 using Models.Responses;
 
-namespace Business.Account
+namespace Business.Accounts
 {
     public class AccountService : IAccountService
     {
