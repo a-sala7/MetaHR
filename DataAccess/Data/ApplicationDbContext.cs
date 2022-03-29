@@ -14,5 +14,18 @@ namespace DataAccess.Data
         { }
 
         public DbSet<JobPosting> JobPostings { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Department>()
+                .HasMany(d => d.Employees)
+                .WithOne(d => d.Department)
+                .HasForeignKey(d => d.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

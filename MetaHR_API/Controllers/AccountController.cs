@@ -7,6 +7,7 @@ using Models.Commands;
 using Models.Commands.Account;
 using Business.Accounts;
 using Microsoft.AspNetCore.Authorization;
+using Common.Constants;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,19 +24,6 @@ namespace MetaHR_API.Controllers
             _accountService = accountService;
         }
 
-        // GET: api/<AccountController>
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetUserByEmail(string email)
-        {
-            var user = await _accountService.GetUserByEmail(email);
-            if(user is null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterCommand cmd)
         {
@@ -48,7 +36,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginCommand cmd)
+        public async Task<IActionResult> Login(LoginCommand cmd)
         {
             var loginResponse = await _accountService.Login(cmd);
             if (loginResponse.IsSuccessful)

@@ -34,7 +34,7 @@ namespace Business.JobPostings
 
         public async Task<JobPostingDTO> GetById(int id)
         {
-            JobPosting jp = await _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == id);
+            JobPosting jp = await _db.JobPostings.FirstOrDefaultAsync(x => x.Id == id);
             return _mapper.Map<JobPosting, JobPostingDTO>(jp);
         }
 
@@ -56,7 +56,7 @@ namespace Business.JobPostings
 
         public async Task<CommandResult> Update(int id, UpdateJobPostingCommand cmd)
         {
-            JobPosting jpInDb = await _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == id);
+            JobPosting jpInDb = await _db.JobPostings.FirstOrDefaultAsync(x => x.Id == id);
             if(jpInDb == null)
             {
                 return CommandResult.GetNotFoundResult
@@ -75,7 +75,7 @@ namespace Business.JobPostings
 
         public async Task<CommandResult> Delete(int id)
         {
-            JobPosting jpInDb = await _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == id);
+            JobPosting jpInDb = await _db.JobPostings.FirstOrDefaultAsync(x => x.Id == id);
             if (jpInDb == null)
             {
                 return CommandResult.GetNotFoundResult

@@ -5,6 +5,8 @@ using Models.Commands.JobPostings;
 using Models.DTOs;
 using Models.Responses;
 using MetaHR_API.Utility;
+using Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MetaHR_API.Controllers
 {
@@ -38,6 +40,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles.AdminsAndHR)]
         public async Task<IActionResult> Add(AddJobPostingCommand cmd)
         {
             CommandResult cmdResult = await _jobPostingRepo.Add(cmd);
@@ -46,6 +49,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost("update/{id}")]
+        //[Authorize(Roles.AdminsAndHR)]
         public async Task<IActionResult> Update(int id, UpdateJobPostingCommand cmd)
         {
             CommandResult cmdResult = await _jobPostingRepo.Update(id, cmd);
