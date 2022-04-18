@@ -10,7 +10,7 @@ namespace Models.Responses
     {
         public bool IsSuccessful { get; set; }
         public bool NotFound { get; set; }
-        public bool UnknownInternalError { get; set; }
+        public bool InternalError { get; set; }
         public IEnumerable<string> Errors { get; set; }
         public object CreatedId { get; set; }
 
@@ -19,7 +19,7 @@ namespace Models.Responses
         public static readonly CommandResult UnknownInternalErrorResult = new()
         {
             IsSuccessful = false,
-            UnknownInternalError = true,
+            InternalError = true,
             Errors = new List<string> { "Unknown error occured." }
         };
 
@@ -66,6 +66,26 @@ namespace Models.Responses
             {
                 IsSuccessful = true,
                 CreatedId = createdId
+            };
+        }
+
+        public static CommandResult GetInternalErrorResult(string error)
+        {
+            return new CommandResult()
+            {
+                IsSuccessful = false,
+                InternalError = true,
+                Errors = new List<string> { error }
+            };
+        }
+
+        public static CommandResult GetInternalErrorResult(IEnumerable<string> errors)
+        {
+            return new CommandResult()
+            {
+                IsSuccessful = false,
+                InternalError = true,
+                Errors = errors
             };
         }
     }

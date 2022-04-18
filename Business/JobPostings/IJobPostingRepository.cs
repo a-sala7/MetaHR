@@ -13,7 +13,7 @@ namespace Business.JobPostings
     {
         Task<IEnumerable<JobPostingDTO>> GetAll();
         Task<JobPostingDTO> GetById(int id);
-        Task<CommandResult> Add(AddJobPostingCommand cmd);
+        Task<CommandResult> Add(CreateJobPostingCommand cmd);
         Task<CommandResult> Update(int id, UpdateJobPostingCommand cmd);
         Task<CommandResult> Delete(int id);
     }

@@ -7,9 +7,11 @@ namespace MetaHR_API.Utility
     {
         public static IActionResult Resolve(CommandResult cmd)
         {
-            if (cmd.UnknownInternalError)
+            if (cmd.InternalError)
             {
-                return new ObjectResult(cmd)
+                //return the static UnknownInternalErrorResult
+                //so that users don't get to see internal exception details
+                return new ObjectResult(CommandResult.UnknownInternalErrorResult)
                 {
                     StatusCode = StatusCodes.Status500InternalServerError
                 };

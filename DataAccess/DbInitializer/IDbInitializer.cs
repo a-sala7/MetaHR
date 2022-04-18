@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.Commands.JobPostings
+namespace DataAccess.DbInitializer
 {
-    public class UpdateJobPostingCommand : CreateJobPostingCommand
+    public interface IDbInitializer
     {
+        Task InitializeRoles();
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Models.Commands.JobPostings
 {
-    public class AddJobPostingCommand
+    public class CreateJobPostingCommand
     {
         [Required]
         public string Title { get; set; }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.Commands.JobPostings
+namespace Models.Commands.Departments
 {
-    public class UpdateJobPostingCommand : CreateJobPostingCommand
+    public class UpdateDepartmentCommand : CreateDepartmentCommand
     {
     }
 }

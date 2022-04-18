@@ -38,7 +38,7 @@ namespace Business.JobPostings
             return _mapper.Map<JobPosting, JobPostingDTO>(jp);
         }
 
-        public async Task<CommandResult> Add(AddJobPostingCommand cmd)
+        public async Task<CommandResult> Add(CreateJobPostingCommand cmd)
         {
             var newJp = new JobPosting()
             {

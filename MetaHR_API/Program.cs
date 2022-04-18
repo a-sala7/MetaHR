@@ -1,7 +1,11 @@
 using Business.Accounts;
+using Business.Departments;
 using Business.JobPostings;
+using Business.Test;
 using Common.ConfigurationClasses;
 using DataAccess.Data;
+using DataAccess.DbInitializer;
+using MetaHR_API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -107,8 +111,12 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddSingleton(apiConfiguration);
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<TestRepository, TestRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
 var app = builder.Build();
 
@@ -128,5 +136,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.InitializeDatabase().GetAwaiter().GetResult();
 
 app.Run();

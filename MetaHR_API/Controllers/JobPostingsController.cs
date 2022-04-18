@@ -41,7 +41,7 @@ namespace MetaHR_API.Controllers
 
         [HttpPost]
         //[Authorize(Roles.AdminsAndHR)]
-        public async Task<IActionResult> Add(AddJobPostingCommand cmd)
+        public async Task<IActionResult> Add(CreateJobPostingCommand cmd)
         {
             CommandResult cmdResult = await _jobPostingRepo.Add(cmd);
             var actionResult = CommandResultResolver.Resolve(cmdResult);
