@@ -16,6 +16,7 @@ namespace Common.Constants
 
         public const string Employee = "Employee";
         public const string AdminsAndHR = "Admin,HR_Senior,HR_Junior";
+        public const string AdminsAndSeniors = "Admin,HR_Senior";
 
         //can post announcements for his department
         public const string DepartmentDirector = "DepartmentDirector";
