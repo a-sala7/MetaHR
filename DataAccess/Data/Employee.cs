@@ -12,12 +12,18 @@ namespace DataAccess.Data
     public class Employee : ApplicationUser
     {
         [Required]
+        [MaxLength(60)]
         public string Title { get; set; }
 
         public int DepartmentId { get; set; }
         public virtual Department Department { get; set; }
 
         [Required]
-        public DateTime? DateHired { get; set; }
+        public DateTime DateHired { get; set; }
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+
+        public string? ProfilePictureUrl { get; set; }
     }
 }

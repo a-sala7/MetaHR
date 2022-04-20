@@ -123,5 +123,30 @@ namespace Business.Departments
             }
             return false;
         }
+
+        public async Task<CommandResult> Delete(int id)
+        {
+            Department dep = await _db.Departments
+                .Include(x => x.Employees)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if(dep == null)
+            {
+                return CommandResult.GetNotFoundResult($"Department with id {id} not found.");
+            }
+
+            bool departmentHasEmployees = dep.Employees.Any();
+            if (departmentHasEmployees)
+            {
+                return CommandResult.GetErrorResult("Can't delete department with employees." +
+                    " Transfer the employees to another department first.");
+            }
+
+            _db.Departments.Remove(dep);
+            if(await _db.SaveChangesAsync() > 0)
+            {
+                return CommandResult.SuccessResult;
+            }
+            return CommandResult.UnknownInternalErrorResult;
+        }
     }
 }

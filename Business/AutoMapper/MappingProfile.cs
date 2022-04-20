@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Models.Commands.JobPostings;
 using Models.Commands.Departments;
+using Models.Commands.Employees;
 
 namespace Business.AutoMapper
 {
@@ -15,7 +16,6 @@ namespace Business.AutoMapper
     {
         public MappingProfile()
         {
-            CreateMap<ApplicationUser, ApplicationUserDTO>();
             CreateMap<JobPosting, JobPostingDTO>();
             CreateMap<Department, DepartmentDTO>();
 
@@ -23,6 +23,8 @@ namespace Business.AutoMapper
             CreateMap<UpdateJobPostingCommand, JobPosting>();
             CreateMap<CreateDepartmentCommand, Department>();
             CreateMap<UpdateDepartmentCommand, Department>();
+            CreateMap<CreateEmployeeCommand, Employee>();
+            CreateMap<UpdateEmployeeCommand, Employee>();
         }
     }
 }

@@ -10,15 +10,15 @@ namespace Common.Constants
     {
         public const string Admin = "Admin";
         
-        //can post announcements
-        public const string HRSenior = "HR_Senior"; //can set departments
+        //can post global/department-specific announcements
+        public const string HRSenior = "HR_Senior"; //can create departments
         public const string HRJunior = "HR_Junior"; 
 
         public const string Employee = "Employee";
         public const string AdminsAndHR = "Admin,HR_Senior,HR_Junior";
         public const string AdminsAndSeniors = "Admin,HR_Senior";
 
-        //can post announcements for his department
+        //can post department-specific announcements
         public const string DepartmentDirector = "DepartmentDirector";
 
         public static string[] RolesList = new string[] { Admin, HRSenior, HRJunior, Employee, DepartmentDirector };

@@ -76,8 +76,9 @@ namespace Business.Accounts
             {
                 FirstName = cmd.FirstName,
                 LastName = cmd.LastName,
-                UserName = cmd.Email,
-                Email = cmd.Email,
+                UserName = cmd.Email.ToLower(),
+                Email = cmd.Email.ToLower(),
+                DateRegisteredUtc = DateTime.UtcNow
             };
             var identityResult = await _userManager.CreateAsync(user, cmd.Password);
             if (identityResult.Succeeded)

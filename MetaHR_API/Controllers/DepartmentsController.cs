@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Commands.Departments;
 using Models.DTOs;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace MetaHR_API.Controllers
 {
     [Route("api/[controller]")]
@@ -38,7 +36,7 @@ namespace MetaHR_API.Controllers
             DepartmentDTO department = await _departmentRepository.GetById(id);
             if(department == null)
             {
-                return NotFound($"Department with ID {id} not found."):
+                return NotFound($"Department with ID {id} not found.");
             }
             return Ok(department);
         }
@@ -57,6 +55,14 @@ namespace MetaHR_API.Controllers
         public async Task<IActionResult> Update(int id, UpdateDepartmentCommand cmd)
         {
             var cmdResult = await _departmentRepository.Update(id, cmd);
+            return CommandResultResolver.Resolve(cmdResult);
+        }
+
+        // DELETE api/<DepartmentsController>/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cmdResult = await _departmentRepository.Delete(id);
             return CommandResultResolver.Resolve(cmdResult);
         }
     }

@@ -15,5 +15,6 @@ namespace Business.Departments
         Task<IEnumerable<DepartmentDTO>> GetAll();
         Task<CommandResult> Create(CreateDepartmentCommand cmd);
         Task<CommandResult> Update(int id, UpdateDepartmentCommand cmd);
+        Task<CommandResult> Delete(int id);
     }
 }

@@ -1,7 +1,8 @@
 using Business.Accounts;
 using Business.Departments;
+using Business.Email;
+using Business.Employees;
 using Business.JobPostings;
-using Business.Test;
 using Common.ConfigurationClasses;
 using DataAccess.Data;
 using DataAccess.DbInitializer;
@@ -67,6 +68,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
 })
+    .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var apiConfiguration = builder.Configuration.GetSection("METAHR_API_CONFIGURATION").Get<ApiConfiguration>();
@@ -112,7 +114,8 @@ builder.Services.AddSingleton(apiConfiguration);
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<TestRepository, TestRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

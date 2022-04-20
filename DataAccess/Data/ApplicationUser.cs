@@ -21,6 +21,6 @@ namespace DataAccess.Data
         public string LastName { get; set; }
 
         [Required]
-        public DateTime? DateRegistered { get; set; }
+        public DateTime? DateRegisteredUtc { get; set; }
     }
 }

@@ -1,6 +1,7 @@
-﻿using Business.Test;
+﻿using Business.Employees;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Models.Commands.Employees;
 
 namespace MetaHR_API.Controllers
 {
@@ -8,17 +9,17 @@ namespace MetaHR_API.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        private readonly TestRepository _testRepository;
+        private readonly IEmployeeRepository _er;
 
-        public TestController(TestRepository testRepository)
+        public TestController(IEmployeeRepository er)
         {
-            _testRepository = testRepository;
+            _er = er;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Test(string userId)
+        public async Task<IActionResult> Test(CreateEmployeeCommand cmd)
         {
-            var res = await _testRepository.Test(userId);
+            var res = await _er.Create(cmd);
             return Ok(res);
         }
     }
