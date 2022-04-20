@@ -52,6 +52,7 @@ namespace MetaHR_API.Controllers
 
         // POST api/<DepartmentsController>/5
         [HttpPost("{id}")]
+        [Authorize(Roles = Roles.AdminsAndSeniors)]
         public async Task<IActionResult> Update(int id, UpdateDepartmentCommand cmd)
         {
             var cmdResult = await _departmentRepository.Update(id, cmd);
@@ -60,6 +61,7 @@ namespace MetaHR_API.Controllers
 
         // DELETE api/<DepartmentsController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.AdminsAndSeniors)]
         public async Task<IActionResult> Delete(int id)
         {
             var cmdResult = await _departmentRepository.Delete(id);

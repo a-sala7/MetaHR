@@ -40,7 +40,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles.AdminsAndHR)]
+        [Authorize(Roles.AdminsAndHR)]
         public async Task<IActionResult> Add(CreateJobPostingCommand cmd)
         {
             CommandResult cmdResult = await _jobPostingRepo.Add(cmd);
@@ -49,7 +49,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost("update/{id}")]
-        //[Authorize(Roles.AdminsAndHR)]
+        [Authorize(Roles.AdminsAndHR)]
         public async Task<IActionResult> Update(int id, UpdateJobPostingCommand cmd)
         {
             CommandResult cmdResult = await _jobPostingRepo.Update(id, cmd);
