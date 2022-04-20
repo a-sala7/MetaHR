@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Common.ConfigurationClasses;
 using Models.DTOs;
 using Models.Commands;
-using Models.Commands.Account;
+using Models.Commands.Accounts;
 using System.IdentityModel.Tokens.Jwt;
 using Models.Responses;
 
@@ -148,6 +148,21 @@ namespace Business.Accounts
 
             var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
             return tokenAsString;
+        }
+
+        public async Task<CommandResult> ResetPassword(ResetPasswordCommand cmd)
+        {
+            var user = await _userManager.FindByIdAsync(cmd.UserId);
+            if (user == null)
+            {
+                return CommandResult.GetNotFoundResult($"User with ID {cmd.UserId} not found.");
+            }
+            var identityResult = await _userManager.ResetPasswordAsync(user, cmd.ResetPasswordToken, cmd.Password);
+            if (identityResult.Succeeded)
+            {
+                return CommandResult.SuccessResult;
+            }
+            return CommandResult.GetErrorResult(identityResult.Errors.Select(e => e.Description));
         }
     }
 }

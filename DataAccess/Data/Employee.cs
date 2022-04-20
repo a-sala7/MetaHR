@@ -25,5 +25,13 @@ namespace DataAccess.Data
         public DateTime DateOfBirth { get; set; }
 
         public string? ProfilePictureUrl { get; set; }
+        
+        [MaxLength(50)]
+        public string? LinkedInUsername { get; set; }
+        [MaxLength(50)]
+        public string? GithubUsername { get; set; }
+        [MaxLength(100)]
+        public string? PersonalWebsite { get; set; }
+
     }
 }

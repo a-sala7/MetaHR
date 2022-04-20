@@ -19,5 +19,8 @@ namespace Models.DTOs
         //hidden from other employees
         public DateTime? DateOfBirth { get; set; }
         public string? ProfilePictureUrl { get; set; }
+        public string? LinkedInUsername { get; set; }
+        public string? GithubUsername { get; set; }
+        public string? PersonalWebsite { get; set; }
     }
 }

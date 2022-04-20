@@ -1,6 +1,7 @@
 ﻿using Common.Constants;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,8 @@ namespace DataAccess.DbInitializer
 
         public async Task InitializeRoles()
         {
-            foreach(var role in Roles.RolesList)
+            await _db.Database.MigrateAsync();
+            foreach (var role in Roles.RolesList)
             {
                 if(await _roleManager.RoleExistsAsync(role) == false)
                 {

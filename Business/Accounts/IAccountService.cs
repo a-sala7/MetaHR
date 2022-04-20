@@ -1,5 +1,5 @@
 ﻿using DataAccess.Data;
-using Models.Commands.Account;
+using Models.Commands.Accounts;
 using Models.DTOs;
 using Models.Responses;
 using System;
@@ -12,8 +12,8 @@ namespace Business.Accounts
 {
     public interface IAccountService
     {
-        Task<ApplicationUser> GetUserByEmail(string email);
         Task<LoginResponse> Login(LoginCommand cmd);
         Task<CommandResult> Register(RegisterCommand cmd);
+        Task<CommandResult> ResetPassword(ResetPasswordCommand cmd);
     }
 }

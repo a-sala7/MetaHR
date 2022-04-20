@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Business.Accounts;
 using Business.Email;
 using Business.Email.Models;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Models.Commands.Accounts;
 using Models.Commands.Employees;
 using Models.DTOs;
 using Models.Responses;
@@ -22,14 +24,17 @@ namespace Business.Employees
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IAccountService _accountService;
 
         public EmployeeRepository(ApplicationDbContext db, IMapper mapper,
-            UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+            UserManager<ApplicationUser> userManager, IEmailSender emailSender,
+            IAccountService accountService)
         {
             _db = db;
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
+            _accountService = accountService;
         }
 
         public async Task<IEnumerable<EmployeeDTO>> GetAll()
@@ -140,6 +145,44 @@ namespace Business.Employees
             }
         }
 
+        public async Task<CommandResult> OnboardEmployee(OnboardEmployeeCommand cmd)
+        {
+            Employee? empInDb = await _db.Employees.FirstOrDefaultAsync(e => e.Id == cmd.UserId);
+            if(empInDb == null)
+            {
+                return CommandResult.GetNotFoundResult($"Employee with ID {cmd.UserId} not found.");
+            }
+            var resetPwdCmd = new ResetPasswordCommand
+            {
+                UserId = cmd.UserId,
+                Password = cmd.Password,
+                ResetPasswordToken = cmd.ResetPasswordToken
+            };
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var resetPwdResult = await _accountService.ResetPassword(cmd);
+                    if(resetPwdResult.IsSuccessful == false)
+                    {
+                        return resetPwdResult;
+                    }
+                    empInDb.GithubUsername = cmd.GithubUsername;
+                    empInDb.LinkedInUsername = cmd.LinkedInUsername;
+                    empInDb.PersonalWebsite = cmd.PersonalWebsite;
+                    _db.Employees.Update(empInDb);
+                    await _db.SaveChangesAsync();
+                    transaction.Commit();
+                    return CommandResult.SuccessResult;
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
         private readonly Expression<Func<Employee, EmployeeDTO>> EmployeeToEmployeeDTOExpression
            = e => new EmployeeDTO
            {
@@ -151,7 +194,10 @@ namespace Business.Employees
                DepartmentName = e.Department.Name,
                DateHired = e.DateHired,
                DateOfBirth = e.DateOfBirth,
-               ProfilePictureUrl = e.ProfilePictureUrl
+               ProfilePictureUrl = e.ProfilePictureUrl,
+               GithubUsername = e.GithubUsername,
+               LinkedInUsername = e.LinkedInUsername,
+               PersonalWebsite = e.PersonalWebsite
            };
     }
 }
