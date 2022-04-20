@@ -167,6 +167,7 @@ namespace Business.Employees
                     {
                         return resetPwdResult;
                     }
+                    //TODO: code for changing profile picture
                     empInDb.GithubUsername = cmd.GithubUsername;
                     empInDb.LinkedInUsername = cmd.LinkedInUsername;
                     empInDb.PersonalWebsite = cmd.PersonalWebsite;
