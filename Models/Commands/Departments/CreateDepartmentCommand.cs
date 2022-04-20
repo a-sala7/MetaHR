@@ -12,7 +12,5 @@ namespace Models.Commands.Departments
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
-        [Required]
-        public string DirectorId { get; set; }
     }
 }

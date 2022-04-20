@@ -122,7 +122,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost("{id}/changeProfilePicture")]
-        [Authorize(Roles = Roles.AdminsAndHR)]
+        //[Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> ChangeRole(string id, IFormFile picture)
         {
             var cmdResult = await _employeeRepository.ChangeProfilePicture(id, picture);

@@ -17,9 +17,5 @@ namespace DataAccess.Data
         public string Name { get; set; }
 
         public virtual ICollection<Employee> Employees { get; set; }
-
-        [Required]
-        [MaxLength(450)]
-        public string DirectorId { get; set; }
     }
 }

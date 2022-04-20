@@ -41,15 +41,6 @@ namespace Business.Departments
 
         public async Task<CommandResult> Create(CreateDepartmentCommand cmd)
         {
-            if (await EmployeeIdExists(cmd.DirectorId) == false)
-            {
-                return CommandResult.GetErrorResult($"Director with ID {cmd.DirectorId} not found.");
-            }
-            if(await EmployeeManagesAnotherDepartment(cmd.DirectorId, departmentId: 0))
-            {
-                return CommandResult.GetErrorResult($"This employee is already a director of another department.");
-            }
-
             var department = _mapper.Map<CreateDepartmentCommand, Department>(cmd);
             _db.Departments.Add(department);
 
@@ -68,60 +59,14 @@ namespace Business.Departments
             {
                 return CommandResult.GetNotFoundResult($"Department with ID {departmentId} not found.");
             }
-            using (IDbContextTransaction transaction = _db.Database.BeginTransaction())
+
+            _mapper.Map<UpdateDepartmentCommand, Department>(cmd, depInDb);
+            _db.Departments.Update(depInDb);
+            if(await _db.SaveChangesAsync() > 0)
             {
-                try
-                {
-                    if (depInDb.DirectorId != cmd.DirectorId)
-                    {
-                        if (await EmployeeIdExists(cmd.DirectorId) == false)
-                        {
-                            return CommandResult.GetErrorResult($"Director with ID {cmd.DirectorId} not found.");
-                        }
-                        if (await EmployeeManagesAnotherDepartment(cmd.DirectorId, departmentId))
-                        {
-                            return CommandResult.GetErrorResult($"This employee is already a director of another department.");
-                        }
-
-                        var oldDirector = await _userManager.FindByIdAsync(depInDb.DirectorId);
-                        var newDirector = await _userManager.FindByIdAsync(cmd.DirectorId);
-                        await _userManager.RemoveFromRoleAsync(oldDirector, Roles.DepartmentDirector);
-                        await _userManager.AddToRoleAsync(newDirector, Roles.DepartmentDirector);
-                    }
-
-
-                    _mapper.Map<UpdateDepartmentCommand, Department>(cmd, depInDb);
-                    _db.Departments.Update(depInDb);
-
-                    transaction.Commit();
-                    return CommandResult.SuccessResult;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    return CommandResult.GetInternalErrorResult(ex.Message);
-                }
+                return CommandResult.SuccessResult;
             }
-        }
-
-        private async Task<bool> EmployeeIdExists(string employeeId)
-        {
-            var emp = await _db.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
-            if (emp == null)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private async Task<bool> EmployeeManagesAnotherDepartment(string employeeId, int departmentId)
-        {
-            Department dep = await _db.Departments.FirstOrDefaultAsync(d => d.DirectorId == employeeId);
-            if(dep != null && dep.Id != departmentId)
-            {
-                return true;
-            }
-            return false;
+            return CommandResult.UnknownInternalErrorResult;
         }
 
         public async Task<CommandResult> Delete(int id)
