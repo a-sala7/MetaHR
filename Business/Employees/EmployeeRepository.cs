@@ -3,6 +3,7 @@ using Business.Accounts;
 using Business.Email;
 using Business.Email.Models;
 using DataAccess.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models.Commands.Accounts;
@@ -182,6 +183,11 @@ namespace Business.Employees
                     throw ex;
                 }
             }
+        }
+
+        public async Task<CommandResult> ChangeProfilePicture(string employeeId, IFormFile picture)
+        {
+            throw new NotImplementedException();
         }
 
         private readonly Expression<Func<Employee, EmployeeDTO>> EmployeeToEmployeeDTOExpression

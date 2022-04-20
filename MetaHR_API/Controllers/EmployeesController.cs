@@ -56,7 +56,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles.AdminsAndHR)]
+        [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> CreateEmployee(CreateEmployeeCommand cmd)
         {
             var r = cmd.Role;
@@ -89,7 +89,7 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost("changeRole")]
-        [Authorize(Roles.AdminsAndHR)]
+        [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> ChangeRole(ChangeRoleCommand cmd)
         {
             var r = cmd.RoleName;
@@ -119,6 +119,14 @@ namespace MetaHR_API.Controllers
 
             var res = await _employeeRepository.ChangeRole(cmd);
             return CommandResultResolver.Resolve(res);
+        }
+
+        [HttpPost("{id}/changeProfilePicture")]
+        [Authorize(Roles = Roles.AdminsAndHR)]
+        public async Task<IActionResult> ChangeRole(string id, IFormFile picture)
+        {
+            var cmdResult = await _employeeRepository.ChangeProfilePicture(id, picture);
+            return CommandResultResolver.Resolve(cmdResult);
         }
     }
 }

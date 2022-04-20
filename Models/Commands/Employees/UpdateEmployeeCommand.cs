@@ -29,5 +29,15 @@ namespace Models.Commands.Employees
 
         [Required]
         public int DepartmentId { get; set; }
+
+        [MaxLength(50)]
+        public string? GithubUsername { get; set; }
+
+        [MaxLength(50)]
+        public string? LinkedInUsername { get; set; }
+
+        [Url]
+        [MaxLength(100)]
+        public string? PersonalWebsite { get; set; }
     }
 }

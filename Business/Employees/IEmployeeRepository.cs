@@ -1,4 +1,5 @@
-﻿using Models.Commands.Employees;
+﻿using Microsoft.AspNetCore.Http;
+using Models.Commands.Employees;
 using Models.DTOs;
 using Models.Responses;
 using System;
@@ -17,5 +18,6 @@ namespace Business.Employees
         Task<CommandResult> Update(string employeeId, UpdateEmployeeCommand cmd);
         Task<CommandResult> ChangeRole(ChangeRoleCommand cmd);
         Task<CommandResult> OnboardEmployee(OnboardEmployeeCommand cmd);
+        Task<CommandResult> ChangeProfilePicture(string employeeId, IFormFile picture);
     }
 }

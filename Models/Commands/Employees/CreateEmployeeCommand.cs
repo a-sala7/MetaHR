@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -36,5 +37,15 @@ namespace Models.Commands.Employees
 
         [Required]
         public string Role { get; set; }
+        
+        [MaxLength(50)]
+        public string? GithubUsername { get; set; }
+        
+        [MaxLength(50)]
+        public string? LinkedInUsername { get; set; }
+        
+        [Url]
+        [MaxLength(100)]
+        public string? PersonalWebsite { get; set; }
     }
 }
