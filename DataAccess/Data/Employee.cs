@@ -33,5 +33,7 @@ namespace DataAccess.Data
         [MaxLength(100)]
         public string? PersonalWebsite { get; set; }
 
+        public virtual ICollection<EmployeeNote> NotesWritten { get; set; }
+        public virtual ICollection<EmployeeNote> NotesAbout { get; set; }
     }
 }

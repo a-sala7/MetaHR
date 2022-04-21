@@ -93,5 +93,56 @@ namespace Business.Departments
             }
             return CommandResult.UnknownInternalErrorResult;
         }
+
+        public async Task<CommandResult> AssignDirector(AssignDirectorCommand cmd)
+        {
+            Department dep = await _db.Departments
+                .Include(x => x.Employees)
+                .FirstOrDefaultAsync(x => x.Id == cmd.DepartmentId);
+            if (dep == null)
+            {
+                return CommandResult.GetNotFoundResult($"Department with ID {cmd.DepartmentId} not found.");
+            }
+            Employee newDir = await _db.Employees
+                .FirstOrDefaultAsync(e => e.Id == cmd.DirectorId);
+            if(newDir == null)
+            {
+                return CommandResult.GetNotFoundResult($"Employee with ID {cmd.DirectorId} not found.");
+            }
+            IList<ApplicationUser>? directors = await _userManager.GetUsersInRoleAsync(Roles.DepartmentDirector);
+            IList<string>? directorIds = directors.Select(x => x.Id).ToList();
+            //given user is already a director
+            if (directors.Contains(newDir))
+            {
+                if (newDir.DepartmentId == cmd.DepartmentId)
+                    return CommandResult.SuccessResult;
+                else
+                    return CommandResult.GetErrorResult($"This employee is already a director of department with ID {newDir.DepartmentId}");
+            }
+            //given user is not a director
+            //he is now director of given department, if a director exists for this department, he replaces him
+            using(var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var existingDirector = await _db
+                    .Employees
+                    .FirstOrDefaultAsync
+                    (e => directorIds.Contains(e.Id) && e.DepartmentId == cmd.DepartmentId);
+                    if (existingDirector != null)
+                    {
+                        await _userManager.RemoveFromRoleAsync(existingDirector, Roles.DepartmentDirector);
+                    }
+                    await _userManager.AddToRoleAsync(newDir, Roles.DepartmentDirector);
+                    transaction.Commit();
+                    return CommandResult.SuccessResult;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+        }
     }
 }

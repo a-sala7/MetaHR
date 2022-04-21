@@ -16,5 +16,6 @@ namespace Business.Departments
         Task<CommandResult> Create(CreateDepartmentCommand cmd);
         Task<CommandResult> Update(int id, UpdateDepartmentCommand cmd);
         Task<CommandResult> Delete(int id);
+        Task<CommandResult> AssignDirector(AssignDirectorCommand cmd);
     }
 }

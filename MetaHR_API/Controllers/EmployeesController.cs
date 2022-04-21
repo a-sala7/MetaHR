@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.Commands.Employees;
 using Models.Responses;
+using System.Security.Claims;
 
 namespace MetaHR_API.Controllers
 {
@@ -92,6 +93,10 @@ namespace MetaHR_API.Controllers
         [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> ChangeRole(ChangeRoleCommand cmd)
         {
+            if(User.FindFirst(ClaimTypes.NameIdentifier).Value == cmd.EmployeeId)
+            {
+                return BadRequest("You can't change your own role.");
+            }
             var r = cmd.RoleName;
             if (User.IsInRole(Roles.Admin))
             {

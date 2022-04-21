@@ -16,6 +16,7 @@ namespace DataAccess.Data
         public DbSet<JobPosting> JobPostings { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<EmployeeNote> EmployeeNotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -25,6 +26,18 @@ namespace DataAccess.Data
                 .HasMany(d => d.Employees)
                 .WithOne(d => d.Department)
                 .HasForeignKey(d => d.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Employee>()
+                .HasMany(e => e.NotesWritten)
+                .WithOne(n => n.EmployeeWrittenBy)
+                .HasForeignKey(n => n.EmployeeWrittenById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Employee>()
+                .HasMany(e => e.NotesAbout)
+                .WithOne(n => n.EmployeeWrittenAbout)
+                .HasForeignKey(n => n.EmployeeWrittenAboutId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

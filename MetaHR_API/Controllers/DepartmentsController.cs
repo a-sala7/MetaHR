@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Commands.Departments;
 using Models.DTOs;
+using System.Security.Claims;
 
 namespace MetaHR_API.Controllers
 {
@@ -65,6 +66,19 @@ namespace MetaHR_API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var cmdResult = await _departmentRepository.Delete(id);
+            return CommandResultResolver.Resolve(cmdResult);
+        }
+
+        // POST api/<DepartmentsController>/5/assignDirector
+        [HttpPost("{id}/assignDirector")]
+        [Authorize(Roles = Roles.AdminsAndSeniors)]
+        public async Task<IActionResult> AssignDirector(AssignDirectorCommand cmd)
+        {
+            if (User.FindFirst(ClaimTypes.NameIdentifier).Value == cmd.DirectorId)
+            {
+                return BadRequest("You can't assign yourself as a director.");
+            }
+            var cmdResult = await _departmentRepository.AssignDirector(cmd);
             return CommandResultResolver.Resolve(cmdResult);
         }
     }
