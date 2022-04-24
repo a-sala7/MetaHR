@@ -11,7 +11,7 @@ namespace MetaHR_API
             var dbInitializer = serviceProvider.GetRequiredService<IDbInitializer>();
 
             await dbInitializer.InitializeRoles();
-            await dbInitializer.SeedAdminUserr();
+            await dbInitializer.SeedAdminUser();
 
             return app;
         }

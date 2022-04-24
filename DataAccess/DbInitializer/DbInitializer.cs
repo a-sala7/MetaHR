@@ -36,7 +36,7 @@ namespace DataAccess.DbInitializer
             }
         }
 
-        public async Task SeedAdminUserr()
+        public async Task SeedAdminUser()
         {
             var adminInDb = await _userManager.FindByEmailAsync("admin@test.com");
             if (adminInDb != null)

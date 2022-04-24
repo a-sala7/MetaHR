@@ -9,6 +9,6 @@ namespace DataAccess.DbInitializer
     public interface IDbInitializer
     {
         Task InitializeRoles();
-        Task SeedAdminUserr();
+        Task SeedAdminUser();
     }
 }
