@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Models.Commands.JobPostings;
 using Models.Commands.Departments;
 using Models.Commands.Employees;
+using Models.Commands.Notes;
 
 namespace Business.AutoMapper
 {
@@ -25,6 +26,7 @@ namespace Business.AutoMapper
             CreateMap<UpdateDepartmentCommand, Department>();
             CreateMap<CreateEmployeeCommand, Employee>();
             CreateMap<UpdateEmployeeCommand, Employee>();
+            CreateMap<CreateEmployeeNoteCommand, EmployeeNote>();
         }
     }
 }

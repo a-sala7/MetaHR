@@ -40,23 +40,23 @@ namespace Models.Responses
             };
         }
 
-        public static CommandResult GetNotFoundResult(string error)
+        public static CommandResult GetNotFoundResult(string typeName, string id)
         {
             return new CommandResult()
             {
                 IsSuccessful = false,
                 NotFound = true,
-                Errors = new List<string> { error }
+                Errors = new List<string> { $"{typeName} with ID: {id} not found." }
             };
         }
 
-        public static CommandResult GetNotFoundResult(IEnumerable<string> errors)
+        public static CommandResult GetNotFoundResult(string typeName, int id)
         {
             return new CommandResult()
             {
                 IsSuccessful = false,
                 NotFound = true,
-                Errors = errors
+                Errors = new List<string> { $"{typeName} with ID: {id} not found." }
             };
         }
 

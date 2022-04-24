@@ -60,7 +60,7 @@ namespace Business.JobPostings
             if(jpInDb == null)
             {
                 return CommandResult.GetNotFoundResult
-                    ($"Job posting with ID: {id} not found.");
+                    ("JobPosting", id);
             }
 
             _mapper.Map(cmd, jpInDb);
@@ -79,7 +79,7 @@ namespace Business.JobPostings
             if (jpInDb == null)
             {
                 return CommandResult.GetNotFoundResult
-                    ($"Job posting with ID: {id} not found.");
+                    ("JobPosting", id);
             }
 
             _db.JobPostings.Remove(jpInDb);

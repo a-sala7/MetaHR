@@ -57,7 +57,7 @@ namespace Business.Departments
             
             if (depInDb == null)
             {
-                return CommandResult.GetNotFoundResult($"Department with ID {departmentId} not found.");
+                return CommandResult.GetNotFoundResult("Department", departmentId);
             }
 
             _mapper.Map<UpdateDepartmentCommand, Department>(cmd, depInDb);
@@ -76,7 +76,7 @@ namespace Business.Departments
                 .FirstOrDefaultAsync(x => x.Id == id);
             if(dep == null)
             {
-                return CommandResult.GetNotFoundResult($"Department with id {id} not found.");
+                return CommandResult.GetNotFoundResult("Department", id);
             }
 
             bool departmentHasEmployees = dep.Employees.Any();
@@ -101,13 +101,13 @@ namespace Business.Departments
                 .FirstOrDefaultAsync(x => x.Id == cmd.DepartmentId);
             if (dep == null)
             {
-                return CommandResult.GetNotFoundResult($"Department with ID {cmd.DepartmentId} not found.");
+                return CommandResult.GetNotFoundResult("Department", cmd.DepartmentId);
             }
             Employee newDir = await _db.Employees
                 .FirstOrDefaultAsync(e => e.Id == cmd.DirectorId);
             if(newDir == null)
             {
-                return CommandResult.GetNotFoundResult($"Employee with ID {cmd.DirectorId} not found.");
+                return CommandResult.GetNotFoundResult("Employee", cmd.DirectorId);
             }
             IList<ApplicationUser>? directors = await _userManager.GetUsersInRoleAsync(Roles.DepartmentDirector);
             IList<string>? directorIds = directors.Select(x => x.Id).ToList();

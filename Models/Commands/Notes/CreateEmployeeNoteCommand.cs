@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Data
+namespace Models.Commands.Notes
 {
-    public class EmployeeNote : NoteBase
+    public class CreateEmployeeNoteCommand
     {
         [Required]
         public string EmployeeWrittenAboutId { get; set; }
-        public virtual Employee EmployeeWrittenAbout { get; set; }
+
+        [Required]
+        [MaxLength(1000)]
+        public string Content { get; set; }
     }
 }

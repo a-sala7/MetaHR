@@ -104,7 +104,7 @@ namespace Business.Employees
             Employee? empInDb = await _db.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
             if(empInDb == null)
             {
-                return CommandResult.GetNotFoundResult($"Employee with ID {employeeId} not found.");
+                return CommandResult.GetNotFoundResult("Employee", employeeId);
             }
 
             empInDb = _mapper.Map<UpdateEmployeeCommand, Employee>(cmd);
@@ -122,7 +122,7 @@ namespace Business.Employees
             ApplicationUser? emp = await _userManager.FindByIdAsync(cmd.EmployeeId);
             if(emp == null)
             {
-                return CommandResult.GetNotFoundResult($"Employee with ID {cmd.EmployeeId} not found");
+                return CommandResult.GetNotFoundResult("Employee", cmd.EmployeeId);
             }
             using (var transaction = _db.Database.BeginTransaction())
             {
@@ -151,7 +151,7 @@ namespace Business.Employees
             Employee? empInDb = await _db.Employees.FirstOrDefaultAsync(e => e.Id == cmd.UserId);
             if(empInDb == null)
             {
-                return CommandResult.GetNotFoundResult($"Employee with ID {cmd.UserId} not found.");
+                return CommandResult.GetNotFoundResult("Employee", cmd.UserId);
             }
             var resetPwdCmd = new ResetPasswordCommand
             {

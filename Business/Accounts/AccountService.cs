@@ -35,7 +35,7 @@ namespace Business.Accounts
             var user = await _userManager.FindByEmailAsync(cmd.Email);
             if(user == null)
             {
-                return LoginResponse.ErrorResponse($"User with email {cmd.Email} not found.");
+                return LoginResponse.ErrorResponse("User with email {cmd.Email} not found.");
             }
             var signInResult = await _signInManager.PasswordSignInAsync
                 (user, cmd.Password, isPersistent: true, lockoutOnFailure: true);
@@ -155,7 +155,7 @@ namespace Business.Accounts
             var user = await _userManager.FindByIdAsync(cmd.UserId);
             if (user == null)
             {
-                return CommandResult.GetNotFoundResult($"User with ID {cmd.UserId} not found.");
+                return CommandResult.GetNotFoundResult("User", cmd.UserId);
             }
             var identityResult = await _userManager.ResetPasswordAsync(user, cmd.ResetPasswordToken, cmd.Password);
             if (identityResult.Succeeded)
