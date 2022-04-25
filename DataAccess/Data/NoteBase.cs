@@ -12,8 +12,8 @@ namespace DataAccess.Data
         public int Id { get; set; }
 
         [Required]
-        public string EmployeeWrittenById { get; set; }
-        public virtual Employee EmployeeWrittenBy { get; set; }
+        public string AuthorId { get; set; }
+        public virtual Employee Author { get; set; }
 
         [Required]
         [MaxLength(1000)]

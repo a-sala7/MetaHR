@@ -31,22 +31,27 @@ namespace MetaHR_API.Controllers
             {
                 return NotFound($"Note with ID {id} not found.");
             }
-            if (note.EmployeeWrittenById != User.GetId())
+            if (note.AuthorId != User.GetId())
             {
                 return Unauthorized();
             }
             return Ok(note);
         }
 
-        [HttpGet("allWrittenBy/{id}")]
+        [HttpGet("mynotes")]
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
-        public async Task<IActionResult> GetAllWrittenBy(string id)
+        public async Task<IActionResult> GetMyNotes()
         {
-            if (id != User.GetId())
-            {
-                return Unauthorized();
-            }
-            var notes = await _repo.GetAllWrittenBy(id);
+            var notes = await _repo.GetAllByAuthor(User.GetId());
+            return Ok(notes);
+        }
+
+        [HttpGet("allAboutEmployee/{employeeId}")]
+        [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
+        public async Task<IActionResult> GetAllAboutEmployee(string employeeId)
+        {
+            var notes = await _repo
+                .GetAllAboutEmployee(authorId: User.GetId(), employeeId);
             return Ok(notes);
         }
 
@@ -54,11 +59,15 @@ namespace MetaHR_API.Controllers
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
         public async Task<IActionResult> Create(CreateEmployeeNoteCommand cmd)
         {
+            if(cmd.EmployeeId == User.GetId())
+            {
+                return BadRequest(CommandResult.GetErrorResult("Can't make a note about yourself."));
+            }
             var result = await _repo.Create(User.GetId(), cmd);
             return CommandResultResolver.Resolve(result);
         }
 
-        [HttpPost("{id}")]
+        [HttpPost("{noteId}")]
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
         public async Task<IActionResult> Update(int noteId, string newContent)
         {
@@ -67,7 +76,7 @@ namespace MetaHR_API.Controllers
             {
                 return NotFound(CommandResult.GetNotFoundResult("Note", noteId));
             }
-            if(note.EmployeeWrittenById != User.GetId())
+            if(note.AuthorId != User.GetId())
             {
                 return Unauthorized();
             }
@@ -77,14 +86,14 @@ namespace MetaHR_API.Controllers
 
         [HttpDelete]
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
-        public async Task<IActionResult> Delete(int noteId, string newContent)
+        public async Task<IActionResult> Delete(int noteId)
         {
             var note = await _repo.GetById(noteId);
             if (note == null)
             {
                 return NotFound(CommandResult.GetNotFoundResult("Note", noteId));
             }
-            if (note.EmployeeWrittenById != User.GetId())
+            if (note.AuthorId != User.GetId())
             {
                 return Unauthorized();
             }

@@ -1,6 +1,7 @@
 using Business.Accounts;
 using Business.Departments;
 using Business.Email;
+using Business.EmployeeNotes;
 using Business.Employees;
 using Business.JobPostings;
 using Common.ConfigurationClasses;
@@ -116,6 +117,7 @@ builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
+builder.Services.AddScoped<IEmployeeNoteRepository, EmployeeNoteRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

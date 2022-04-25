@@ -10,7 +10,7 @@ namespace Models.Commands.Notes
     public class CreateEmployeeNoteCommand
     {
         [Required]
-        public string EmployeeWrittenAboutId { get; set; }
+        public string EmployeeId { get; set; }
 
         [Required]
         [MaxLength(1000)]

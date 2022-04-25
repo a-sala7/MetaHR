@@ -10,9 +10,9 @@ namespace Models.DTOs
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public string EmployeeWrittenById { get; set; }
-        public string EmployeeWrittenByName { get; set; }
-        public string EmployeeWrittenAboutId { get; set; }
-        public string EmployeeWrittenAboutName { get; set; }
+        public string AuthorId { get; set; }
+        public string AuthorName { get; set; }
+        public string EmployeeId { get; set; }
+        public string EmployeeName { get; set; }
     }
 }

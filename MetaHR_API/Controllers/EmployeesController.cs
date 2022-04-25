@@ -126,12 +126,11 @@ namespace MetaHR_API.Controllers
             return CommandResultResolver.Resolve(res);
         }
 
-        [HttpPost("{id}/changeProfilePicture")]
-        //[Authorize(Roles = Roles.AdminsAndHR)]
-        public async Task<IActionResult> ChangeRole(string id, IFormFile picture)
+        [HttpPost("onboard")]
+        public async Task<IActionResult> OnboardEmployee(OnboardEmployeeCommand cmd)
         {
-            var cmdResult = await _employeeRepository.ChangeProfilePicture(id, picture);
-            return CommandResultResolver.Resolve(cmdResult);
+            var res = await _employeeRepository.OnboardEmployee(cmd);
+            return CommandResultResolver.Resolve(res);
         }
     }
 }

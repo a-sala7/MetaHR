@@ -11,7 +11,8 @@ namespace Business.EmployeeNotes
 {
     public interface IEmployeeNoteRepository
     {
-        Task<IEnumerable<EmployeeNoteDTO>> GetAllWrittenBy(string id);
+        Task<IEnumerable<EmployeeNoteDTO>> GetAllByAuthor(string authorId);
+        Task<IEnumerable<EmployeeNoteDTO>> GetAllAboutEmployee(string authorId, string employeeId);
         Task<EmployeeNoteDTO> GetById(int id);
         Task<CommandResult> Create(string writtenById, CreateEmployeeNoteCommand cmd);
         Task<CommandResult> Update(int id, string content);

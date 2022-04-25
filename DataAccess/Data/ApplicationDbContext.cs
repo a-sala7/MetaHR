@@ -30,14 +30,14 @@ namespace DataAccess.Data
 
             builder.Entity<Employee>()
                 .HasMany(e => e.NotesWritten)
-                .WithOne(n => n.EmployeeWrittenBy)
-                .HasForeignKey(n => n.EmployeeWrittenById)
+                .WithOne(n => n.Author)
+                .HasForeignKey(n => n.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Employee>()
                 .HasMany(e => e.NotesAbout)
-                .WithOne(n => n.EmployeeWrittenAbout)
-                .HasForeignKey(n => n.EmployeeWrittenAboutId)
+                .WithOne(n => n.Employee)
+                .HasForeignKey(n => n.EmployeeId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

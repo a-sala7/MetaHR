@@ -10,7 +10,7 @@ namespace DataAccess.Data
     public class EmployeeNote : NoteBase
     {
         [Required]
-        public string EmployeeWrittenAboutId { get; set; }
-        public virtual Employee EmployeeWrittenAbout { get; set; }
+        public string EmployeeId { get; set; }
+        public virtual Employee Employee { get; set; }
     }
 }

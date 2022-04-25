@@ -32,15 +32,15 @@ namespace Business.EmployeeNotes
                 return CommandResult.GetNotFoundResult("Employee", writtenById);
             }
 
-            bool aboutExists = await _db.Employees.AnyAsync(e => e.Id == cmd.EmployeeWrittenAboutId);
+            bool aboutExists = await _db.Employees.AnyAsync(e => e.Id == cmd.EmployeeId);
             if (!aboutExists)
             {
-                return CommandResult.GetNotFoundResult("Employee", cmd.EmployeeWrittenAboutId);
+                return CommandResult.GetNotFoundResult("Employee", cmd.EmployeeId);
             }
 
 
             var newNote = _mapper.Map<CreateEmployeeNoteCommand, EmployeeNote>(cmd);
-            newNote.EmployeeWrittenById = writtenById;
+            newNote.AuthorId = writtenById;
             
             _db.Add(newNote);
             
@@ -61,23 +61,27 @@ namespace Business.EmployeeNotes
             return CommandResult.SuccessResult;
         }
 
-        public async Task<IEnumerable<EmployeeNoteDTO>> GetAllWrittenAbout(string id)
+        public async Task<IEnumerable<EmployeeNoteDTO>> GetAllAboutEmployee(string authorId, string employeeId)
         {
             IEnumerable<EmployeeNoteDTO> notesAbout = await _db
                 .EmployeeNotes
+                .Include(n => n.Employee)
+                .Include(n => n.Author)
                 .Select(NoteToNoteDTOExpression)
-                .Where(n => n.EmployeeWrittenAboutId == id)
+                .Where(n => n.EmployeeId == employeeId && n.AuthorId == authorId)
                 .ToListAsync();
 
             return notesAbout;
         }
 
-        public async Task<IEnumerable<EmployeeNoteDTO>> GetAllWrittenBy(string id)
+        public async Task<IEnumerable<EmployeeNoteDTO>> GetAllByAuthor(string authorId)
         {
             IEnumerable<EmployeeNoteDTO> notesBy = await _db
                 .EmployeeNotes
+                .Include(n => n.Employee)
+                .Include(n => n.Author)
                 .Select(NoteToNoteDTOExpression)
-                .Where(n => n.EmployeeWrittenById == id)
+                .Where(n => n.AuthorId == authorId)
                 .ToListAsync();
 
             return notesBy;
@@ -85,9 +89,15 @@ namespace Business.EmployeeNotes
 
         public async Task<EmployeeNoteDTO> GetById(int id)
         {
-            var note = await _db.EmployeeNotes.FirstOrDefaultAsync(n => n.Id == id);
+            var note = await _db
+                .EmployeeNotes
+                .Include(n => n.Employee)
+                .Include(n => n.Author)
+                .FirstOrDefaultAsync(n => n.Id == id);
+
             if(note is null)
                 return null;
+            
             var noteDto = NoteToNoteDTOExpression.Compile().Invoke(note);
             return noteDto;
         }
@@ -109,10 +119,10 @@ namespace Business.EmployeeNotes
            = n => new EmployeeNoteDTO
            {
                Id = n.Id,
-               EmployeeWrittenById = n.EmployeeWrittenById,
-               EmployeeWrittenByName = n.EmployeeWrittenBy.FirstName + n.EmployeeWrittenBy.LastName,
-               EmployeeWrittenAboutId = n.EmployeeWrittenAboutId,
-               EmployeeWrittenAboutName = n.EmployeeWrittenAbout.FirstName + n.EmployeeWrittenAbout.LastName,
+               AuthorId = n.AuthorId,
+               AuthorName = n.Author.FirstName + " " + n.Author.LastName,
+               EmployeeId = n.EmployeeId,
+               EmployeeName = n.Employee.FirstName + " " + n.Employee.LastName,
                Content = n.Content
            };
     }
