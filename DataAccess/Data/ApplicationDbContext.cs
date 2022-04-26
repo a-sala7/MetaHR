@@ -17,6 +17,8 @@ namespace DataAccess.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<EmployeeNote> EmployeeNotes { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<TicketMessage> TicketMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -38,6 +40,12 @@ namespace DataAccess.Data
                 .HasMany(e => e.NotesAbout)
                 .WithOne(n => n.Employee)
                 .HasForeignKey(n => n.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TicketMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany(e => e.TicketMessages)
+                .HasForeignKey(e => e.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

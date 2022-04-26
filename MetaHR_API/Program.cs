@@ -4,6 +4,7 @@ using Business.Email;
 using Business.EmployeeNotes;
 using Business.Employees;
 using Business.JobPostings;
+using Business.Tickets;
 using Common.ConfigurationClasses;
 using DataAccess.Data;
 using DataAccess.DbInitializer;
@@ -118,6 +119,7 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
 builder.Services.AddScoped<IEmployeeNoteRepository, EmployeeNoteRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

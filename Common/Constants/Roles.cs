@@ -12,7 +12,7 @@ namespace Common.Constants
         
         //can post global/department-specific announcements
         public const string HRSenior = "HR_Senior"; //can create departments
-        public const string HRJunior = "HR_Junior"; 
+        public const string HRJunior = "HR_Junior";
 
         public const string Employee = "Employee";
         public const string AdminsAndHR = "Admin,HR_Senior,HR_Junior";

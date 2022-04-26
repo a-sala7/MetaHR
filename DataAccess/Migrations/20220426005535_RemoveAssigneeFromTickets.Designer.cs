@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220426005535_RemoveAssigneeFromTickets")]
+    partial class RemoveAssigneeFromTickets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,10 +222,6 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsInternalNote")
                         .HasColumnType("bit");
 
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("TicketId")
                         .HasColumnType("int");
 
@@ -231,8 +229,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SenderId");
 
                     b.HasIndex("TicketId");
 
@@ -442,19 +438,11 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DataAccess.Data.TicketMessage", b =>
                 {
-                    b.HasOne("DataAccess.Data.Employee", "Sender")
-                        .WithMany("TicketMessages")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("DataAccess.Data.Ticket", "Ticket")
                         .WithMany("Messages")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Sender");
 
                     b.Navigation("Ticket");
                 });
@@ -542,8 +530,6 @@ namespace DataAccess.Migrations
                     b.Navigation("NotesAbout");
 
                     b.Navigation("NotesWritten");
-
-                    b.Navigation("TicketMessages");
                 });
 #pragma warning restore 612, 618
         }
