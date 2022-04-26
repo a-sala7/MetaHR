@@ -58,6 +58,7 @@ namespace Business.Tickets
                 },
                 CreatedAt = utcnow,
                 IsOpen = true,
+                IsAwaitingResponse = true
             };
             _db.Add(ticket);
             await _db.SaveChangesAsync();
@@ -71,7 +72,23 @@ namespace Business.Tickets
             {
                 return CommandResult.GetNotFoundResult("Ticket", ticketId);
             }
+            if(ticket.IsOpen == isOpen)
+            {
+                return CommandResult.SuccessResult;
+            }
             ticket.IsOpen = isOpen;
+            if(isOpen == false)
+            {
+                ticket.IsAwaitingResponse = false;
+            }
+            else
+            {
+                var lastMsg = _db.TicketMessages
+                    .Where(t => t.TicketId == ticketId)
+                    .OrderByDescending(t => t.TimestampUtc)
+                    .FirstOrDefault();
+                ticket.IsAwaitingResponse = (ticket.CreatorId == lastMsg.SenderId);
+            }
             _db.Tickets.Update(ticket);
             await _db.SaveChangesAsync();
             return CommandResult.SuccessResult;
@@ -137,9 +154,31 @@ namespace Business.Tickets
                 IsInternalNote = isInternalNote,
                 TimestampUtc = DateTime.UtcNow
             };
+            if(ticket.CreatorId == cmd.SenderId)
+            {
+                ticket.IsAwaitingResponse = true;
+            }
+            else
+            {
+                ticket.IsAwaitingResponse = false;
+            }
+            _db.Tickets.Update(ticket);
             _db.TicketMessages.Add(msg);
             await _db.SaveChangesAsync();
             return CommandResult.SuccessResult;
+        }
+
+        public async Task<IEnumerable<TicketDTO>> GetTicketsAwaitingResponse()
+        {
+            var tickets = await _db
+                .Tickets
+                .Include(t => t.Creator)
+                .ThenInclude(e => e.Department)
+                .Where(t => t.IsAwaitingResponse)
+                .Select(TicketToTicketDTOExpression)
+                .ToListAsync();
+
+            return tickets;
         }
 
         private readonly Expression<Func<Ticket, TicketDTO>> TicketToTicketDTOExpression
@@ -151,7 +190,8 @@ namespace Business.Tickets
                CreatorName = t.Creator.FirstName + " " + t.Creator.LastName,
                CreatorDepartmentName = t.Creator.Department.Name,
                CreatedAt = t.CreatedAt,
-               IsOpen = t.IsOpen
+               IsOpen = t.IsOpen,
+               IsAwaitingResponse = t.IsAwaitingResponse
            };
 
         private readonly Expression<Func<TicketMessage, TicketMessageDTO>> TicketMessageToTicketMessageDTOExpression

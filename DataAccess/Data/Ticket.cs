@@ -18,6 +18,7 @@ namespace DataAccess.Data
         public DateTime CreatedAt { get; set; }
         public virtual Employee Creator { get; set; }
         public bool IsOpen { get; set; } = true;
+        public bool IsAwaitingResponse { get; set; } = true;
         public virtual ICollection<TicketMessage> Messages { get; set; }
     }
 }

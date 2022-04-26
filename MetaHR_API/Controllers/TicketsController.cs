@@ -56,6 +56,14 @@ namespace MetaHR_API.Controllers
             return Ok(tickets);
         }
 
+        [HttpGet("awaitingResponse")]
+        [Authorize(Roles = Roles.HRSenior + "," + Roles.HRJunior)]
+        public async Task<IActionResult> GetTicketsAwaitingResponse()
+        {
+            var tickets = await _ticketRepository.GetTicketsAwaitingResponse();
+            return Ok(tickets);
+        }
+
         [HttpPost("createTicket")]
         [Authorize(Roles = Roles.Employee)]
         public async Task<IActionResult> CreateTicket(CreateTicketCommand cmd)
