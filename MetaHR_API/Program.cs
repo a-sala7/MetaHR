@@ -1,4 +1,5 @@
 using Business.Accounts;
+using Business.Announcements;
 using Business.Departments;
 using Business.Email;
 using Business.EmployeeNotes;
@@ -120,6 +121,7 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
 builder.Services.AddScoped<IEmployeeNoteRepository, EmployeeNoteRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

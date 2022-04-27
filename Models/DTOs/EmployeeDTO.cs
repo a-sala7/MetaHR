@@ -13,7 +13,8 @@ namespace Models.DTOs
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Title { get; set; }
-        public string? DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
         //hidden from other employees
         public DateTime? DateHired { get; set; }
         //hidden from other employees

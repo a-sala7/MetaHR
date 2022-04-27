@@ -36,5 +36,6 @@ namespace DataAccess.Data
         public virtual ICollection<EmployeeNote> NotesWritten { get; set; }
         public virtual ICollection<EmployeeNote> NotesAbout { get; set; }
         public virtual ICollection<TicketMessage> TicketMessages { get; set; }
+        public virtual ICollection<Announcement> AnnouncementsWritten { get; set; }
     }
 }

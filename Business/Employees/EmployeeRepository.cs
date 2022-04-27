@@ -49,7 +49,10 @@ namespace Business.Employees
 
         public async Task<EmployeeDTO> GetById(string employeeId)
         {
-            Employee emp = await _db.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+            Employee emp = await _db
+                .Employees
+                .Include(e => e.Department)
+                .FirstOrDefaultAsync(e => e.Id == employeeId);
             if(emp == null)
             {
                 return null;
@@ -198,6 +201,7 @@ namespace Business.Employees
                Title = e.Title,
                FirstName = e.FirstName,
                LastName = e.LastName,
+               DepartmentId = e.DepartmentId,
                DepartmentName = e.Department.Name,
                DateHired = e.DateHired,
                DateOfBirth = e.DateOfBirth,

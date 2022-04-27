@@ -70,7 +70,7 @@ namespace MetaHR_API.Controllers
             }
             if (User.IsInRole(Roles.HRSenior))
             {
-                if (r != Roles.HRSenior && r != Roles.HRJunior)
+                if (r != Roles.HRSenior && r != Roles.HRJunior && r != Roles.Employee)
                 {
                     return BadRequest(CommandResult.GetErrorResult($"{r} is an invalid role " +
                         $"choice or you are not authorized to create such a user."));
@@ -78,7 +78,7 @@ namespace MetaHR_API.Controllers
             }
             if (User.IsInRole(Roles.HRJunior))
             {
-                if (r != Roles.Employee)
+                if (r != Roles.HRJunior && r != Roles.Employee)
                 {
                     return BadRequest(CommandResult.GetErrorResult($"{r} is an invalid role " +
                         $"choice or you are not authorized to create such a user."));

@@ -19,6 +19,7 @@ namespace DataAccess.Data
         public DbSet<EmployeeNote> EmployeeNotes { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketMessage> TicketMessages { get; set; }
+        public DbSet<Announcement> Announcements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
