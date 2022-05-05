@@ -132,5 +132,71 @@ namespace MetaHR_API.Controllers
             var res = await _employeeRepository.OnboardEmployee(cmd);
             return CommandResultResolver.Resolve(res);
         }
+
+        [HttpPost("test")]
+        public async Task<IActionResult> Test([FromForm] TestCmd cmd)
+        {
+            var length = cmd.ProfilePicture.Length;
+            if(length > Sizes.MaxPfpSizeBytes)
+            {
+                var sizeInMB = (int)(Sizes.MaxPfpSizeBytes / (1024 * 1024));
+                return BadRequest($"File must be less than {sizeInMB}MB");
+            }
+            
+            var ext = Path.GetExtension(cmd.ProfilePicture.FileName).ToLower();
+            if (ext == ".jpg" || ext == ".jpeg")
+            {
+                if(FileSignatureVerifier.IsJpeg(cmd.ProfilePicture.OpenReadStream(), length) == false)
+                {
+                    return BadRequest("Not a valid .JPEG image.");
+                }
+            }
+            else if (ext == ".png")
+            {
+                if (FileSignatureVerifier.IsPng(cmd.ProfilePicture.OpenReadStream(), length) == false)
+                {
+                    return BadRequest("Not a valid .PNG image.");
+                }
+            }
+            else
+            {
+                return BadRequest("Must be a .JPEG or .PNG image.");
+            }
+
+            var res = await _employeeRepository
+                .ChangeProfilePicture(cmd.EmployeeId, cmd.ProfilePicture);
+
+            return CommandResultResolver.Resolve(res);
+        }
+        [HttpPost("test2")]
+        public async Task<IActionResult> Test2(IFormFile pdfFile)
+        {
+            var length = pdfFile.Length;
+            if (length > Sizes.MaxPfpSizeBytes)
+            {
+                var sizeInMB = (int)(Sizes.MaxPdfSizeBytes / (1024 * 1024));
+                return BadRequest($"File must be less than {sizeInMB}MB");
+            }
+
+            var ext = Path.GetExtension(pdfFile.FileName).ToLower();
+            if (ext == ".pdf")
+            {
+                if (FileSignatureVerifier.IsPdf(pdfFile.OpenReadStream(), length) == false)
+                {
+                    return BadRequest("Not a valid .PDF file.");
+                }
+            }
+            else
+            {
+                return BadRequest("Must be a .PDF file.");
+            }
+
+            return Ok(CommandResult.SuccessResult);
+        }
+        public class TestCmd
+        {
+            public string EmployeeId { get; set; }
+            public IFormFile ProfilePicture { get; set; }
+        }
     }
 }

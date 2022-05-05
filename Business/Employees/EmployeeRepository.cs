@@ -190,7 +190,14 @@ namespace Business.Employees
 
         public async Task<CommandResult> ChangeProfilePicture(string employeeId, IFormFile picture)
         {
-            throw new NotImplementedException();
+            var ext = Path.GetExtension(picture.FileName);
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var destinationFile = Path.Combine(folder, "pfp_" + employeeId + ext);
+            using(var stream = new FileStream(destinationFile, FileMode.Create))
+            {
+                await picture.CopyToAsync(stream);
+            }
+            return CommandResult.SuccessResult;
         }
 
         private readonly Expression<Func<Employee, EmployeeDTO>> EmployeeToEmployeeDTOExpression
