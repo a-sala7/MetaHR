@@ -23,7 +23,7 @@ namespace MetaHR_API.Controllers
         // GET: api/<DepartmentsController>
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             IEnumerable<DepartmentDTO> departments = await _departmentRepository.GetAll();
             return Ok(departments);
@@ -74,7 +74,7 @@ namespace MetaHR_API.Controllers
         [Authorize(Roles = Roles.AdminsAndSeniors)]
         public async Task<IActionResult> AssignDirector(AssignDirectorCommand cmd)
         {
-            if (User.FindFirst(ClaimTypes.NameIdentifier).Value == cmd.DirectorId)
+            if (User.GetId() == cmd.DirectorId)
             {
                 return BadRequest("You can't assign yourself as a director.");
             }

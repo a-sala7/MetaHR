@@ -4,6 +4,7 @@ using Business.Departments;
 using Business.Email;
 using Business.EmployeeNotes;
 using Business.Employees;
+using Business.Files;
 using Business.JobPostings;
 using Business.Tickets;
 using Common.ConfigurationClasses;
@@ -122,6 +123,7 @@ builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
 builder.Services.AddScoped<IEmployeeNoteRepository, EmployeeNoteRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+builder.Services.AddScoped<IFileManager, S3FileManager>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

@@ -12,7 +12,6 @@ namespace Models.Responses
         public bool NotFound { get; set; }
         public bool InternalError { get; set; }
         public IEnumerable<string> Errors { get; set; }
-        public object CreatedId { get; set; }
 
 
         public static readonly CommandResult SuccessResult = new() { IsSuccessful = true };
@@ -57,15 +56,6 @@ namespace Models.Responses
                 IsSuccessful = false,
                 NotFound = true,
                 Errors = new List<string> { $"{typeName} with ID: {id} not found." }
-            };
-        }
-
-        public static CommandResult GetCreatedResult(object createdId)
-        {
-            return new CommandResult()
-            {
-                IsSuccessful = true,
-                CreatedId = createdId
             };
         }
 

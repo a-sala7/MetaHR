@@ -1,4 +1,5 @@
 ﻿using Business.Employees;
+using Business.Files;
 using Common.Constants;
 using MetaHR_API.Utility;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,13 @@ namespace MetaHR_API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IFileManager _fileManager;
 
-        public EmployeesController(IEmployeeRepository employeeRepository)
+        public EmployeesController(IEmployeeRepository employeeRepository,
+            IFileManager fileManager)
         {
             _employeeRepository = employeeRepository;
+            _fileManager = fileManager;
         }
 
         [HttpGet]
@@ -93,7 +97,7 @@ namespace MetaHR_API.Controllers
         [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> ChangeRole(ChangeRoleCommand cmd)
         {
-            if(User.FindFirst(ClaimTypes.NameIdentifier).Value == cmd.EmployeeId)
+            if(User.GetId() == cmd.EmployeeId)
             {
                 return BadRequest("You can't change your own role.");
             }
@@ -163,33 +167,20 @@ namespace MetaHR_API.Controllers
                 return BadRequest("Must be a .JPEG or .PNG image.");
             }
 
-            var res = await _employeeRepository
-                .ChangeProfilePicture(cmd.EmployeeId, cmd.ProfilePicture);
+            var url = await _fileManager
+                .UploadFile(
+                fileName: Guid.NewGuid().ToString() + ext,
+                stream: cmd.ProfilePicture.OpenReadStream(),
+                contentType: cmd.ProfilePicture.ContentType,
+                folder: "profile-pictures"
+                );
 
-            return CommandResultResolver.Resolve(res);
+            return Ok(url);
         }
-        [HttpPost("test2")]
-        public async Task<IActionResult> Test2(IFormFile pdfFile)
+        [HttpPost("testDelete")]
+        public async Task<IActionResult> TestDelete(string fileName, string? folder = null)
         {
-            var length = pdfFile.Length;
-            if (length > Sizes.MaxPfpSizeBytes)
-            {
-                var sizeInMB = (int)(Sizes.MaxPdfSizeBytes / (1024 * 1024));
-                return BadRequest($"File must be less than {sizeInMB}MB");
-            }
-
-            var ext = Path.GetExtension(pdfFile.FileName).ToLower();
-            if (ext == ".pdf")
-            {
-                if (FileSignatureVerifier.IsPdf(pdfFile.OpenReadStream(), length) == false)
-                {
-                    return BadRequest("Not a valid .PDF file.");
-                }
-            }
-            else
-            {
-                return BadRequest("Must be a .PDF file.");
-            }
+            await _fileManager.DeleteFile(fileName, folder);
 
             return Ok(CommandResult.SuccessResult);
         }

@@ -25,6 +25,9 @@ namespace Models.Commands.Employees
         public DateTime DateOfBirth { get; set; }
 
         [Required]
+        public DateTime DateHired { get; set; }
+        
+        [Required]
         public string Title { get; set; }
 
         [Required]
