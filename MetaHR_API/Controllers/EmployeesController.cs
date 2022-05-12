@@ -167,10 +167,22 @@ namespace MetaHR_API.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteProfilePicture(string employeeId)
         {
-            if (employeeId != User.GetId() && User.IsInRole(Roles.Admin) == false)
+            if (User.IsInRole(Roles.Admin))
             {
-                return BadRequest(CommandResult.GetErrorResult("You cannot delete someone else's profile picture."));
+                if(employeeId == User.GetId())
+                {
+                    return BadRequest(CommandResult.GetErrorResult("Admin users can't have profile pictures." +
+                        " What are you trying to delete?"));
+                }
             }
+            else
+            {
+                if (employeeId != User.GetId())
+                {
+                    return BadRequest(CommandResult.GetErrorResult("You cannot delete someone else's profile picture."));
+                }
+            }
+            
 
             var res = await _employeeRepository.DeleteProfilePicture(employeeId);
             return CommandResultResolver.Resolve(res);
