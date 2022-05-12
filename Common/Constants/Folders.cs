@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Common.Constants
 {
-    public static class Sizes
+    public static class Folders
     {
-        public const int MaxImageSizeBytes = 2 * 1024 * 1024;
-        public const int MaxPdfSizeBytes = 8 * 1024 * 1024;
+        public static string ProfilePictures = "profile-pictures";
     }
 }

@@ -13,6 +13,8 @@ using Models.Commands;
 using Models.Commands.Accounts;
 using System.IdentityModel.Tokens.Jwt;
 using Models.Responses;
+using Business.Email;
+using Business.Email.Models;
 
 namespace Business.Accounts
 {
@@ -21,13 +23,16 @@ namespace Business.Accounts
         private readonly ApiConfiguration _apiConfiguration;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailSender _emailSender;
         public AccountService(ApiConfiguration apiConfiguration,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IEmailSender emailSender)
         {
             _apiConfiguration = apiConfiguration;
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
         public async Task<LoginResponse> Login(LoginCommand cmd)
@@ -68,43 +73,6 @@ namespace Business.Accounts
             {
                 return LoginResponse.ErrorResponse($"Invalid password, you have {5 - user.AccessFailedCount} attempts remaining.");
             }
-        }
-
-        public async Task<CommandResult> Register(RegisterCommand cmd)
-        {
-            var user = new ApplicationUser
-            {
-                FirstName = cmd.FirstName,
-                LastName = cmd.LastName,
-                UserName = cmd.Email.ToLower(),
-                Email = cmd.Email.ToLower(),
-                DateRegisteredUtc = DateTime.UtcNow
-            };
-            var identityResult = await _userManager.CreateAsync(user, cmd.Password);
-            if (identityResult.Succeeded)
-            {
-                return CommandResult.SuccessResult;
-            }
-            var identityErrors = identityResult.Errors.Select(e => e.Description);
-            return CommandResult.GetErrorResult(identityErrors);
-        }
-
-        public async Task<ApplicationUser> GetUserByEmail(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
-                return null;
-
-            return user;
-
-            //return new ApplicationUserDTO
-            //{
-            //    Id = user.Id,
-            //    Email = user.Email,
-            //    FirstName = user.FirstName,
-            //    LastName = user.LastName,
-            //    EmailConfirmed = user.EmailConfirmed
-            //};
         }
 
         private async Task<List<Claim>> GetUserClaims(ApplicationUser user)
@@ -148,6 +116,44 @@ namespace Business.Accounts
 
             var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
             return tokenAsString;
+        }
+
+        public async Task<CommandResult> ForgotPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return CommandResult.GetNotFoundResult("User", email);
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var model = new PasswordResetEmailModel
+            {
+                Email = email,
+                UserId = user.Id,
+                FirstName = user.FirstName,
+                PasswordResetToken = token
+            };
+            await _emailSender.SendPasswordResetEmail(model);
+            return CommandResult.SuccessResult;
+        }
+
+        public async Task<CommandResult> ChangePassword(ChangePasswordCommand cmd)
+        {
+            var user = await _userManager.FindByIdAsync(cmd.UserId);
+            if (user == null)
+            {
+                return CommandResult.GetNotFoundResult("User", cmd.UserId);
+            }
+
+            var changeResult = await _userManager.ChangePasswordAsync(user, cmd.OldPassword, cmd.NewPassword);
+
+            if (changeResult.Succeeded)
+            {
+                return CommandResult.SuccessResult;
+            }
+            IEnumerable<string> errors = changeResult.Errors.Select(e => e.Description);
+            return CommandResult.GetErrorResult(errors);
         }
 
         public async Task<CommandResult> ResetPassword(ResetPasswordCommand cmd)

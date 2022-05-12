@@ -2,6 +2,8 @@
 using Business.Accounts;
 using Business.Email;
 using Business.Email.Models;
+using Business.FileManager;
+using Common.Constants;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +14,7 @@ using Models.DTOs;
 using Models.Responses;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -26,16 +29,18 @@ namespace Business.Employees
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly IAccountService _accountService;
+        private readonly IFileManager _fileManager;
 
         public EmployeeRepository(ApplicationDbContext db, IMapper mapper,
             UserManager<ApplicationUser> userManager, IEmailSender emailSender,
-            IAccountService accountService)
+            IAccountService accountService, IFileManager fileManager)
         {
             _db = db;
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _accountService = accountService;
+            _fileManager = fileManager;
         }
 
         public async Task<IEnumerable<EmployeeDTO>> GetAll()
@@ -156,22 +161,26 @@ namespace Business.Employees
             {
                 return CommandResult.GetNotFoundResult("Employee", cmd.UserId);
             }
-            var resetPwdCmd = new ResetPasswordCommand
-            {
-                UserId = cmd.UserId,
-                Password = cmd.Password,
-                ResetPasswordToken = cmd.ResetPasswordToken
-            };
+            
             using (var transaction = _db.Database.BeginTransaction())
             {
+                if(cmd.ProfilePicture != null)
+                {
+                    await ChangeProfilePicture(
+                        new ChangePfpCommand 
+                        { 
+                            EmployeeId = empInDb.Id,
+                            Picture = cmd.ProfilePicture 
+                        });
+                }
                 try
                 {
-                    var resetPwdResult = await _accountService.ResetPassword(cmd);
+                    var resetPwdCommand = cmd as ResetPasswordCommand;
+                    var resetPwdResult = await _accountService.ResetPassword(resetPwdCommand);
                     if(resetPwdResult.IsSuccessful == false)
                     {
                         return resetPwdResult;
                     }
-                    //TODO: code for changing profile picture
                     empInDb.GithubUsername = cmd.GithubUsername;
                     empInDb.LinkedInUsername = cmd.LinkedInUsername;
                     empInDb.PersonalWebsite = cmd.PersonalWebsite;
@@ -188,15 +197,73 @@ namespace Business.Employees
             }
         }
 
-        public async Task<CommandResult> ChangeProfilePicture(string employeeId, IFormFile picture)
+        public async Task<CommandResult> ChangeProfilePicture(ChangePfpCommand cmd)
         {
-            var ext = Path.GetExtension(picture.FileName);
-            var folder = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var destinationFile = Path.Combine(folder, "pfp_" + employeeId + ext);
-            using(var stream = new FileStream(destinationFile, FileMode.Create))
+            Employee? empInDb = await _db.Employees.FirstOrDefaultAsync(e => e.Id == cmd.EmployeeId);
+            if(empInDb == null)
             {
-                await picture.CopyToAsync(stream);
+                return CommandResult.GetNotFoundResult("Employee", cmd.EmployeeId);
             }
+            var oldPfpUrl = empInDb.ProfilePictureUrl;
+            string newPfpUrl;
+            if(string.IsNullOrWhiteSpace(oldPfpUrl) == false)
+            {
+                //upload first before deleting
+                var ext = Path.GetExtension(cmd.Picture.FileName);
+                string newFileName = Guid.NewGuid().ToString() + ext;
+                newPfpUrl = await _fileManager.UploadFile(
+                    fileName: newFileName,
+                    stream: cmd.Picture.OpenReadStream(),
+                    contentType: cmd.Picture.ContentType,
+                    folder: Folders.ProfilePictures
+                    );
+                
+                var oldPfpFileName = Path.GetFileName(oldPfpUrl);
+                try
+                {
+                    await _fileManager.DeleteFile(oldPfpFileName, Folders.ProfilePictures);
+                }
+                catch (Exception ex)
+                {
+                    //fail gracefully if delete doesn't work (maybe file was already deleted before)
+                    //if I don't do this, in the case that a file has already been deleted, then
+                    //the user would never be able to finish uploading a new one
+                    Debug.WriteLine(ex);
+                }
+            }
+            else
+            {
+                var ext = Path.GetExtension(cmd.Picture.FileName);
+                string newFileName = Guid.NewGuid().ToString() + ext;
+                newPfpUrl = await _fileManager.UploadFile(
+                    fileName: newFileName,
+                    stream: cmd.Picture.OpenReadStream(),
+                    contentType: cmd.Picture.ContentType,
+                    folder: Folders.ProfilePictures
+                    );
+            }
+            empInDb.ProfilePictureUrl = newPfpUrl;
+            _db.Employees.Update(empInDb);
+            await _db.SaveChangesAsync();
+            return CommandResult.SuccessResult;
+        }
+
+        public async Task<CommandResult> DeleteProfilePicture(string employeeId)
+        {
+            Employee? empInDb = await _db.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+            if (empInDb == null)
+            {
+                return CommandResult.GetNotFoundResult("Employee", employeeId);
+            }
+            if(string.IsNullOrWhiteSpace(empInDb.ProfilePictureUrl))
+            {
+                return CommandResult.GetErrorResult("No profile picture to delete.");
+            }
+            var key = Path.GetFileName(empInDb.ProfilePictureUrl);
+            await _fileManager.DeleteFile(key, Folders.ProfilePictures);
+            empInDb.ProfilePictureUrl = null;
+            _db.Employees.Update(empInDb);
+            await _db.SaveChangesAsync();
             return CommandResult.SuccessResult;
         }
 

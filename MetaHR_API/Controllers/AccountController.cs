@@ -26,13 +26,6 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterCommand cmd)
-        {
-            var result = await _accountService.Register(cmd);
-            return CommandResultResolver.Resolve(result);
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Login(LoginCommand cmd)
         {
             var loginResponse = await _accountService.Login(cmd);

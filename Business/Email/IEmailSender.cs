@@ -10,5 +10,6 @@ namespace Business.Email
     public interface IEmailSender
     {
         Task SendEmailToNewUser(NewUserEmailModel model);
+        Task SendPasswordResetEmail(PasswordResetEmailModel model);
     }
 }

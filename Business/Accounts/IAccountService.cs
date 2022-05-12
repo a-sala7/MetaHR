@@ -13,7 +13,8 @@ namespace Business.Accounts
     public interface IAccountService
     {
         Task<LoginResponse> Login(LoginCommand cmd);
-        Task<CommandResult> Register(RegisterCommand cmd);
+        Task<CommandResult> ForgotPassword(string email);
         Task<CommandResult> ResetPassword(ResetPasswordCommand cmd);
+        Task<CommandResult> ChangePassword(ChangePasswordCommand cmd);
     }
 }

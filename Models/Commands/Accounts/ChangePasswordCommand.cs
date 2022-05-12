@@ -7,20 +7,14 @@ using System.Threading.Tasks;
 
 namespace Models.Commands.Accounts
 {
-    public class RegisterCommand
+    public class ChangePasswordCommand
     {
         [Required]
-        public string FirstName { get; set; }
-
+        public string UserId { get; set; }
         [Required]
-        public string LastName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
+        public string OldPassword { get; set; }
         [Required]
         [MinLength(6)]
-        public string Password { get; set; }
+        public string NewPassword { get; set; }
     }
 }

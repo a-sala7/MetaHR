@@ -10,7 +10,7 @@ using Amazon.S3.Model;
 using System.Net;
 using Models.Responses;
 
-namespace Business.Files
+namespace Business.FileManager
 {
     public class S3FileManager : IFileManager
     {
@@ -90,7 +90,7 @@ namespace Business.Files
             {
                 throw new ArgumentException("Folder name can't be longer than 100 characters.");
             }
-            string allowed = "qwertyuiopasdfghjklzxcvbnm1234567890";
+            string allowed = "qwertyuiopasdfghjklzxcvbnm1234567890-_";
             if(folderName.Any(c => allowed.Contains(c) == false))
             {
                 throw new ArgumentException("Invalid folder name.");

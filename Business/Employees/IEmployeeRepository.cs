@@ -18,6 +18,7 @@ namespace Business.Employees
         Task<CommandResult> Update(string employeeId, UpdateEmployeeCommand cmd);
         Task<CommandResult> ChangeRole(ChangeRoleCommand cmd);
         Task<CommandResult> OnboardEmployee(OnboardEmployeeCommand cmd);
-        Task<CommandResult> ChangeProfilePicture(string employeeId, IFormFile picture);
+        Task<CommandResult> ChangeProfilePicture(ChangePfpCommand cmd);
+        Task<CommandResult> DeleteProfilePicture(string employeeId);
     }
 }

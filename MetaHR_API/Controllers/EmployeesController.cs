@@ -1,13 +1,11 @@
 ﻿using Business.Employees;
-using Business.Files;
+using Business.FileManager;
 using Common.Constants;
 using MetaHR_API.Utility;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.Commands.Employees;
 using Models.Responses;
-using System.Security.Claims;
 
 namespace MetaHR_API.Controllers
 {
@@ -16,13 +14,10 @@ namespace MetaHR_API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IFileManager _fileManager;
 
-        public EmployeesController(IEmployeeRepository employeeRepository,
-            IFileManager fileManager)
+        public EmployeesController(IEmployeeRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
-            _fileManager = fileManager;
         }
 
         [HttpGet]
@@ -131,63 +126,54 @@ namespace MetaHR_API.Controllers
         }
 
         [HttpPost("onboard")]
-        public async Task<IActionResult> OnboardEmployee(OnboardEmployeeCommand cmd)
+        public async Task<IActionResult> OnboardEmployee([FromForm] OnboardEmployeeCommand cmd)
         {
+            if(cmd.ProfilePicture != null)
+            {
+                var verifyResult = FileVerifier.VerifyImage(cmd.ProfilePicture);
+                if (verifyResult.IsSuccessful == false)
+                {
+                    return CommandResultResolver.Resolve(verifyResult);
+                }
+            }
+
             var res = await _employeeRepository.OnboardEmployee(cmd);
             return CommandResultResolver.Resolve(res);
         }
 
-        [HttpPost("test")]
-        public async Task<IActionResult> Test([FromForm] TestCmd cmd)
+        [HttpPost("changepfp")]
+        [Authorize]
+        public async Task<IActionResult> ChangeProfilePicture([FromForm] ChangePfpCommand cmd)
         {
-            var length = cmd.ProfilePicture.Length;
-            if(length > Sizes.MaxPfpSizeBytes)
+            if (User.IsInRole(Roles.Admin))
             {
-                var sizeInMB = (int)(Sizes.MaxPfpSizeBytes / (1024 * 1024));
-                return BadRequest($"File must be less than {sizeInMB}MB");
+                return BadRequest(CommandResult.GetErrorResult("Admin users can't have profile pictures."));
             }
-            
-            var ext = Path.GetExtension(cmd.ProfilePicture.FileName).ToLower();
-            if (ext == ".jpg" || ext == ".jpeg")
+            if(cmd.EmployeeId != User.GetId())
             {
-                if(FileSignatureVerifier.IsJpeg(cmd.ProfilePicture.OpenReadStream(), length) == false)
-                {
-                    return BadRequest("Not a valid .JPEG image.");
-                }
+                return BadRequest(CommandResult.GetErrorResult("You cannot change someone else's profile picture."));
             }
-            else if (ext == ".png")
+            var verifyResult = FileVerifier.VerifyImage(cmd.Picture);
+
+            if(verifyResult.IsSuccessful == false)
             {
-                if (FileSignatureVerifier.IsPng(cmd.ProfilePicture.OpenReadStream(), length) == false)
-                {
-                    return BadRequest("Not a valid .PNG image.");
-                }
-            }
-            else
-            {
-                return BadRequest("Must be a .JPEG or .PNG image.");
+                return CommandResultResolver.Resolve(verifyResult);
             }
 
-            var url = await _fileManager
-                .UploadFile(
-                fileName: Guid.NewGuid().ToString() + ext,
-                stream: cmd.ProfilePicture.OpenReadStream(),
-                contentType: cmd.ProfilePicture.ContentType,
-                folder: "profile-pictures"
-                );
-
-            return Ok(url);
+            var res = await _employeeRepository.ChangeProfilePicture(cmd);
+            return CommandResultResolver.Resolve(res);
         }
-        [HttpPost("testDelete")]
-        public async Task<IActionResult> TestDelete(string fileName, string? folder = null)
+        [HttpPost("deletepfp")]
+        [Authorize]
+        public async Task<IActionResult> DeleteProfilePicture(string employeeId)
         {
-            await _fileManager.DeleteFile(fileName, folder);
+            if (employeeId != User.GetId() && User.IsInRole(Roles.Admin) == false)
+            {
+                return BadRequest(CommandResult.GetErrorResult("You cannot delete someone else's profile picture."));
+            }
 
-            return Ok(CommandResult.SuccessResult);
-        }
-        public class TestCmd
-        {
-            public string EmployeeId { get; set; }
-            public IFormFile ProfilePicture { get; set; }
+            var res = await _employeeRepository.DeleteProfilePicture(employeeId);
+            return CommandResultResolver.Resolve(res);
         }
     }
 }
