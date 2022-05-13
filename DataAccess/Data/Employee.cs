@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace DataAccess.Data
 {
     [Table("Employees")]
+    [Index(nameof(IsDirector))]
     public class Employee : ApplicationUser
     {
         [Required]
@@ -17,6 +19,7 @@ namespace DataAccess.Data
 
         public int DepartmentId { get; set; }
         public virtual Department Department { get; set; }
+        public bool IsDirector { get; set; }
 
         [Required]
         public DateTime DateHired { get; set; }

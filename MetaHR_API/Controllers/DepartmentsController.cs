@@ -32,7 +32,7 @@ namespace MetaHR_API.Controllers
         // GET api/<DepartmentsController>/5
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             DepartmentDTO department = await _departmentRepository.GetById(id);
             if(department == null)
@@ -70,14 +70,19 @@ namespace MetaHR_API.Controllers
         }
 
         // POST api/<DepartmentsController>/5/assignDirector
-        [HttpPost("{id}/assignDirector")]
+        [HttpPost("{departmentId}/assignDirector")]
         [Authorize(Roles = Roles.AdminsAndSeniors)]
-        public async Task<IActionResult> AssignDirector(AssignDirectorCommand cmd)
+        public async Task<IActionResult> AssignDirector(int departmentId, string directorId)
         {
-            if (User.GetId() == cmd.DirectorId)
+            if (User.GetId() == directorId)
             {
                 return BadRequest("You can't assign yourself as a director.");
             }
+            var cmd = new AssignDirectorCommand 
+            { 
+                DepartmentId = departmentId, 
+                DirectorId = directorId 
+            };
             var cmdResult = await _departmentRepository.AssignDirector(cmd);
             return CommandResultResolver.Resolve(cmdResult);
         }

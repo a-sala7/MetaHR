@@ -277,6 +277,7 @@ namespace Business.Employees
                LastName = e.LastName,
                DepartmentId = e.DepartmentId,
                DepartmentName = e.Department.Name,
+               IsDirector = e.IsDirector,
                DateHired = e.DateHired,
                DateOfBirth = e.DateOfBirth,
                ProfilePictureUrl = e.ProfilePictureUrl,

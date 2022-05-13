@@ -15,6 +15,7 @@ namespace Models.DTOs
         public string Title { get; set; }
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
+        public bool IsDirector { get; set; }
         //hidden from other employees
         public DateTime? DateHired { get; set; }
         //hidden from other employees

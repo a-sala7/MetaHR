@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Constants;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq.Expressions;
 
 namespace Business.Departments
 {
@@ -30,13 +31,29 @@ namespace Business.Departments
         public async Task<IEnumerable<DepartmentDTO>> GetAll()
         {
             List<Department> deps = await _db.Departments.ToListAsync();
-            return _mapper.Map<IEnumerable<DepartmentDTO>>(deps);
+            var depDtos = _mapper.Map<IEnumerable<DepartmentDTO>>(deps);
+
+            var directors = await _db.Employees.Where(e => e.IsDirector).ToListAsync();
+            foreach(var dir in directors)
+            {
+                var dep = depDtos.FirstOrDefault(dep => dep.Id == dir.DepartmentId);
+                dep.DirectorId = dir.Id;
+                dep.DirectorName = $"{dir.FirstName} {dir.LastName}";
+            }
+            return depDtos;
         }
 
         public async Task<DepartmentDTO> GetById(int departmentId)
         {
             Department dep = await _db.Departments.FirstOrDefaultAsync(d => d.Id == departmentId);
-            return _mapper.Map<DepartmentDTO>(dep);
+            var depDto = _mapper.Map<DepartmentDTO>(dep);
+
+            var directors = await _db.Employees.Where(e => e.IsDirector).ToListAsync();
+            var dir = directors.FirstOrDefault(e => e.DepartmentId == departmentId);
+            depDto.DirectorId = dir.Id;
+            depDto.DirectorName = $"{dir.FirstName} {dir.LastName}";
+
+            return depDto;
         }
 
         public async Task<CommandResult> Create(CreateDepartmentCommand cmd)
@@ -44,7 +61,7 @@ namespace Business.Departments
             var department = _mapper.Map<CreateDepartmentCommand, Department>(cmd);
             _db.Departments.Add(department);
 
-            if(await _db.SaveChangesAsync() > 0)
+            if (await _db.SaveChangesAsync() > 0)
             {
                 return CommandResult.SuccessResult;
             }
@@ -54,7 +71,7 @@ namespace Business.Departments
         public async Task<CommandResult> Update(int departmentId, UpdateDepartmentCommand cmd)
         {
             Department depInDb = await _db.Departments.FirstOrDefaultAsync(x => x.Id == departmentId);
-            
+
             if (depInDb == null)
             {
                 return CommandResult.GetNotFoundResult("Department", departmentId);
@@ -62,7 +79,7 @@ namespace Business.Departments
 
             _mapper.Map<UpdateDepartmentCommand, Department>(cmd, depInDb);
             _db.Departments.Update(depInDb);
-            if(await _db.SaveChangesAsync() > 0)
+            if (await _db.SaveChangesAsync() > 0)
             {
                 return CommandResult.SuccessResult;
             }
@@ -74,7 +91,7 @@ namespace Business.Departments
             Department dep = await _db.Departments
                 .Include(x => x.Employees)
                 .FirstOrDefaultAsync(x => x.Id == id);
-            if(dep == null)
+            if (dep == null)
             {
                 return CommandResult.GetNotFoundResult("Department", id);
             }
@@ -87,7 +104,7 @@ namespace Business.Departments
             }
 
             _db.Departments.Remove(dep);
-            if(await _db.SaveChangesAsync() > 0)
+            if (await _db.SaveChangesAsync() > 0)
             {
                 return CommandResult.SuccessResult;
             }
@@ -105,23 +122,28 @@ namespace Business.Departments
             }
             Employee newDir = await _db.Employees
                 .FirstOrDefaultAsync(e => e.Id == cmd.DirectorId);
-            if(newDir == null)
+            if (newDir == null)
             {
                 return CommandResult.GetNotFoundResult("Employee", cmd.DirectorId);
             }
-            IList<ApplicationUser>? directors = await _userManager.GetUsersInRoleAsync(Roles.DepartmentDirector);
-            IList<string>? directorIds = directors.Select(x => x.Id).ToList();
-            //given user is already a director
-            if (directors.Contains(newDir))
+
+            if (newDir.DepartmentId != cmd.DepartmentId)
             {
-                if (newDir.DepartmentId == cmd.DepartmentId)
-                    return CommandResult.SuccessResult;
-                else
-                    return CommandResult.GetErrorResult($"This employee is already a director of department with ID {newDir.DepartmentId}");
+                return CommandResult.GetErrorResult($"This employee is not part of that department!");
             }
+
+            var directors = await _userManager.GetUsersInRoleAsync(Roles.DepartmentDirector);
+            var directorIds = directors.Select(x => x.Id).ToList();
+
+            //given user is already a director
+            if (directors.Contains(newDir) && newDir.IsDirector)
+            {
+                return CommandResult.SuccessResult;
+            }
+
             //given user is not a director
             //he is now director of given department, if a director exists for this department, he replaces him
-            using(var transaction = _db.Database.BeginTransaction())
+            using (var transaction = _db.Database.BeginTransaction())
             {
                 try
                 {
@@ -132,8 +154,13 @@ namespace Business.Departments
                     if (existingDirector != null)
                     {
                         await _userManager.RemoveFromRoleAsync(existingDirector, Roles.DepartmentDirector);
+                        existingDirector.IsDirector = false;
+                        _db.Employees.Update(existingDirector);
                     }
                     await _userManager.AddToRoleAsync(newDir, Roles.DepartmentDirector);
+                    newDir.IsDirector = true;
+                    _db.Employees.Update(newDir);
+                    await _db.SaveChangesAsync();
                     transaction.Commit();
                     return CommandResult.SuccessResult;
                 }
