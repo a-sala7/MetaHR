@@ -12,10 +12,15 @@ namespace Models.Commands.Employees
     public class OnboardEmployeeCommand : ResetPasswordCommand
     {
         public IFormFile? ProfilePicture { get; set; }
-        [MaxLength(50)]
-        public string? GithubUsername { get; set; }
-        [MaxLength(50)]
-        public string? LinkedInUsername { get; set; }
+
+        [Url]
+        [MaxLength(100)]
+        public string? GitHubURL { get; set; }
+        
+        [Url]
+        [MaxLength(100)]
+        public string? LinkedInURL { get; set; }
+        
         [Url]
         [MaxLength(100)]
         public string? PersonalWebsite { get; set; }

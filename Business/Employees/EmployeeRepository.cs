@@ -181,8 +181,8 @@ namespace Business.Employees
                     {
                         return resetPwdResult;
                     }
-                    empInDb.GithubUsername = cmd.GithubUsername;
-                    empInDb.LinkedInUsername = cmd.LinkedInUsername;
+                    empInDb.GitHubURL = cmd.GitHubURL;
+                    empInDb.LinkedInURL = cmd.LinkedInURL;
                     empInDb.PersonalWebsite = cmd.PersonalWebsite;
                     _db.Employees.Update(empInDb);
                     await _db.SaveChangesAsync();
@@ -281,8 +281,8 @@ namespace Business.Employees
                DateHired = e.DateHired,
                DateOfBirth = e.DateOfBirth,
                ProfilePictureUrl = e.ProfilePictureUrl,
-               GithubUsername = e.GithubUsername,
-               LinkedInUsername = e.LinkedInUsername,
+               GitHubURL = e.GitHubURL,
+               LinkedInURL = e.LinkedInURL,
                PersonalWebsite = e.PersonalWebsite
            };
     }

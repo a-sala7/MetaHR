@@ -38,11 +38,11 @@ namespace Models.Commands.Employees
         [Required]
         public string Role { get; set; }
         
-        [MaxLength(50)]
-        public string? GithubUsername { get; set; }
+        [MaxLength(100)]
+        public string? GitHubURL { get; set; }
         
-        [MaxLength(50)]
-        public string? LinkedInUsername { get; set; }
+        [MaxLength(100)]
+        public string? LinkedInURL { get; set; }
         
         [Url]
         [MaxLength(100)]
