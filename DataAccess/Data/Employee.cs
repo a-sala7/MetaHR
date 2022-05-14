@@ -27,7 +27,7 @@ namespace DataAccess.Data
         [Required]
         public DateTime DateOfBirth { get; set; }
 
-        public string? ProfilePictureUrl { get; set; }
+        public string? ProfilePictureURL { get; set; }
         
         [MaxLength(100)]
         public string? LinkedInURL { get; set; }

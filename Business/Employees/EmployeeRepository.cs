@@ -83,21 +83,29 @@ namespace Business.Employees
                     emp.DateRegisteredUtc = DateTime.UtcNow;
                     var pwd = Guid.NewGuid().ToString();
                     var res = await _userManager.CreateAsync(emp, password: pwd);
-                    await _userManager.AddToRoleAsync(emp, cmd.Role);
-                    string token = await _userManager.GeneratePasswordResetTokenAsync(emp);
-
-                    transaction.Commit();
-
-                    var emailModel = new NewUserEmailModel()
+                    if (res.Succeeded)
                     {
-                        Email = cmd.Email,
-                        FirstName = cmd.FirstName,
-                        UserId = emp.Id,
-                        PasswordResetToken = token
-                    };
-                    await _emailSender.SendEmailToNewUser(emailModel);
+                        await _userManager.AddToRoleAsync(emp, cmd.Role);
+                        string token = await _userManager.GeneratePasswordResetTokenAsync(emp);
 
-                    return CommandResult.SuccessResult;
+                        transaction.Commit();
+
+                        var emailModel = new NewUserEmailModel()
+                        {
+                            Email = cmd.Email,
+                            FirstName = cmd.FirstName,
+                            UserId = emp.Id,
+                            PasswordResetToken = token
+                        };
+                        await _emailSender.SendEmailToNewUser(emailModel);
+
+                        return CommandResult.SuccessResult;
+                    }
+                    else
+                    {
+                        var errors = res.Errors.Select(e => e.Description);
+                        return CommandResult.GetErrorResult(errors);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -204,7 +212,7 @@ namespace Business.Employees
             {
                 return CommandResult.GetNotFoundResult("Employee", cmd.EmployeeId);
             }
-            var oldPfpUrl = empInDb.ProfilePictureUrl;
+            var oldPfpUrl = empInDb.ProfilePictureURL;
             string newPfpUrl;
             if(string.IsNullOrWhiteSpace(oldPfpUrl) == false)
             {
@@ -242,7 +250,7 @@ namespace Business.Employees
                     folder: Folders.ProfilePictures
                     );
             }
-            empInDb.ProfilePictureUrl = newPfpUrl;
+            empInDb.ProfilePictureURL = newPfpUrl;
             _db.Employees.Update(empInDb);
             await _db.SaveChangesAsync();
             return CommandResult.SuccessResult;
@@ -255,13 +263,13 @@ namespace Business.Employees
             {
                 return CommandResult.GetNotFoundResult("Employee", employeeId);
             }
-            if(string.IsNullOrWhiteSpace(empInDb.ProfilePictureUrl))
+            if(string.IsNullOrWhiteSpace(empInDb.ProfilePictureURL))
             {
                 return CommandResult.GetErrorResult("No profile picture to delete.");
             }
-            var key = Path.GetFileName(empInDb.ProfilePictureUrl);
+            var key = Path.GetFileName(empInDb.ProfilePictureURL);
             await _fileManager.DeleteFile(key, Folders.ProfilePictures);
-            empInDb.ProfilePictureUrl = null;
+            empInDb.ProfilePictureURL = null;
             _db.Employees.Update(empInDb);
             await _db.SaveChangesAsync();
             return CommandResult.SuccessResult;
@@ -280,7 +288,7 @@ namespace Business.Employees
                IsDirector = e.IsDirector,
                DateHired = e.DateHired,
                DateOfBirth = e.DateOfBirth,
-               ProfilePictureUrl = e.ProfilePictureUrl,
+               ProfilePictureURL = e.ProfilePictureURL,
                GitHubURL = e.GitHubURL,
                LinkedInURL = e.LinkedInURL,
                PersonalWebsite = e.PersonalWebsite

@@ -20,7 +20,7 @@ namespace Models.DTOs
         public DateTime? DateHired { get; set; }
         //hidden from other employees
         public DateTime? DateOfBirth { get; set; }
-        public string? ProfilePictureUrl { get; set; }
+        public string? ProfilePictureURL { get; set; }
         public string? LinkedInURL { get; set; }
         public string? GitHubURL { get; set; }
         public string? PersonalWebsite { get; set; }
