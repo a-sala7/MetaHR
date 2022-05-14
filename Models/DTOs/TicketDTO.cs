@@ -14,6 +14,7 @@ namespace Models.DTOs
         public string CreatorId { get; set; }
         public string CreatorName { get; set; }
         public string CreatorDepartmentName { get; set; }
+        public string LastMessage { get; set; }
         public bool IsAwaitingResponse { get; set; }
         public bool IsOpen { get; set; }
     }

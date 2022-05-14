@@ -25,6 +25,7 @@ namespace Business.Tickets
         {
             var ticket = await _db
                 .Tickets
+                .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
                 .FirstOrDefaultAsync(t => t.Id == id);
@@ -99,6 +100,7 @@ namespace Business.Tickets
             var skip = (pageNumber - 1)*10;
             var tickets = await _db
                 .Tickets
+                .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
                 .OrderByDescending(t => t.CreatedAt)
@@ -106,6 +108,7 @@ namespace Business.Tickets
                 .Take(10)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
+
             return tickets;
         }
 
@@ -113,11 +116,13 @@ namespace Business.Tickets
         {
             var tickets = await _db
                 .Tickets
+                .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(s => s.Department)
                 .Where(t => t.CreatorId == creatorId)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
+
             return tickets;
         }
 
@@ -172,6 +177,7 @@ namespace Business.Tickets
         {
             var tickets = await _db
                 .Tickets
+                .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
                 .Where(t => t.IsAwaitingResponse)
@@ -186,6 +192,7 @@ namespace Business.Tickets
            {
                Id = t.Id,
                Subject = t.Subject,
+               LastMessage = t.Messages.OrderByDescending(tm => tm.TimestampUtc).Select(tm => tm.Content).First(),
                CreatorId = t.CreatorId,
                CreatorName = t.Creator.FirstName + " " + t.Creator.LastName,
                CreatorDepartmentName = t.Creator.Department.Name,
