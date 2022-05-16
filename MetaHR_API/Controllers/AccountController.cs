@@ -35,6 +35,27 @@ namespace MetaHR_API.Controllers
             }
             return BadRequest(loginResponse);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var result = await _accountService.ForgotPassword(email);
+            return CommandResultResolver.Resolve(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
+        {
+            var cmd = new ChangePasswordCommand
+            {
+                OldPassword = oldPassword,
+                NewPassword = newPassword,
+                UserId = User.GetId()
+            };
+            var result = await _accountService.ChangePassword(cmd);
+            return CommandResultResolver.Resolve(result);
+        }
 
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand cmd)
