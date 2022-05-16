@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +16,7 @@ namespace DataAccess.Data
         public int? JobPostingId { get; set; }
         public virtual JobPosting? JobPosting { get; set; }
         public DateTime ReceivedOnUtc { get; set; }
+        public JobApplicationStage Stage { get; set; }
 
         //applicant info
         [Required]
