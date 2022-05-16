@@ -10,6 +10,7 @@ using Models.Commands.JobPostings;
 using Models.Commands.Departments;
 using Models.Commands.Employees;
 using Models.Commands.Notes;
+using Models.Commands.Attendances;
 
 namespace Business.AutoMapper
 {
@@ -19,6 +20,7 @@ namespace Business.AutoMapper
         {
             CreateMap<JobPosting, JobPostingDTO>();
             CreateMap<Department, DepartmentDTO>();
+            CreateMap<Attendance, AttendanceDTO>();
 
             CreateMap<CreateJobPostingCommand, JobPosting>();
             CreateMap<UpdateJobPostingCommand, JobPosting>();
@@ -27,6 +29,7 @@ namespace Business.AutoMapper
             CreateMap<CreateEmployeeCommand, Employee>();
             CreateMap<UpdateEmployeeCommand, Employee>();
             CreateMap<CreateEmployeeNoteCommand, EmployeeNote>();
+            CreateMap<CreateAttendanceCommand, Attendance>();
         }
     }
 }

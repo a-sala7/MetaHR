@@ -15,6 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Models.Responses;
 using Business.Email;
 using Business.Email.Models;
+using Common.Constants;
 
 namespace Business.Accounts
 {
@@ -40,7 +41,7 @@ namespace Business.Accounts
             var user = await _userManager.FindByEmailAsync(cmd.Email);
             if(user == null)
             {
-                return LoginResponse.ErrorResponse("User with email {cmd.Email} not found.");
+                return LoginResponse.ErrorResponse($"User with email {cmd.Email} not found.");
             }
             var signInResult = await _signInManager.PasswordSignInAsync
                 (user, cmd.Password, isPersistent: true, lockoutOnFailure: true);
@@ -169,6 +170,31 @@ namespace Business.Accounts
                 return CommandResult.SuccessResult;
             }
             return CommandResult.GetErrorResult(identityResult.Errors.Select(e => e.Description));
+        }
+
+        public async Task<CommandResult> RegisterAttendanceLogger(RegisterAttendanceLoggerCommand cmd)
+        {
+            var user = new ApplicationUser
+            {
+                FirstName = cmd.FirstName,
+                LastName = cmd.LastName,
+                Email = cmd.Email.ToLower(),
+                UserName = cmd.Email.ToLower(),
+                DateRegisteredUtc = DateTime.UtcNow
+            };
+            var identityResult = await _userManager.CreateAsync(user, cmd.Password);
+            if (identityResult.Succeeded == false)
+            {
+                var errors = identityResult.Errors.Select(e => e.Description);
+                return CommandResult.GetErrorResult(errors);
+            }
+            var roleResult = await _userManager.AddToRoleAsync(user, Roles.AttendanceLogger);
+            if(roleResult.Succeeded == false)
+            {
+                var errors = identityResult.Errors.Select(e => e.Description);
+                return CommandResult.GetErrorResult(errors);
+            }
+            return CommandResult.SuccessResult;
         }
     }
 }

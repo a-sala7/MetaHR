@@ -63,5 +63,13 @@ namespace MetaHR_API.Controllers
             var result = await _accountService.ResetPassword(cmd);
             return CommandResultResolver.Resolve(result);
         }
+
+        [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> RegisterAttendanceLogger(RegisterAttendanceLoggerCommand cmd)
+        {
+            CommandResult res = await _accountService.RegisterAttendanceLogger(cmd);
+            return CommandResultResolver.Resolve(res);
+        }
     }
 }

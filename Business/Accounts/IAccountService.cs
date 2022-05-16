@@ -16,5 +16,6 @@ namespace Business.Accounts
         Task<CommandResult> ForgotPassword(string email);
         Task<CommandResult> ResetPassword(ResetPasswordCommand cmd);
         Task<CommandResult> ChangePassword(ChangePasswordCommand cmd);
+        Task<CommandResult> RegisterAttendanceLogger(RegisterAttendanceLoggerCommand cmd);
     }
 }

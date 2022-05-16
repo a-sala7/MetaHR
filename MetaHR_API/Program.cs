@@ -1,5 +1,6 @@
 using Business.Accounts;
 using Business.Announcements;
+using Business.Attendances;
 using Business.Departments;
 using Business.Email;
 using Business.EmployeeNotes;
@@ -124,6 +125,7 @@ builder.Services.AddScoped<IEmployeeNoteRepository, EmployeeNoteRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IFileManager, S3FileManager>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

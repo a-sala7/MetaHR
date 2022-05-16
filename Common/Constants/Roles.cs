@@ -21,6 +21,8 @@ namespace Common.Constants
         //can post department-specific announcements
         public const string DepartmentDirector = "DepartmentDirector";
 
-        public static string[] RolesList = new string[] { Admin, HRSenior, HRJunior, Employee, DepartmentDirector };
+        public const string AttendanceLogger = "AttendanceLogger";
+
+        public static string[] RolesList = new string[] { Admin, HRSenior, HRJunior, Employee, DepartmentDirector, AttendanceLogger };
     }
 }
