@@ -37,6 +37,6 @@ namespace Models.Commands.JobApplications
 
         //cv
         [Required]
-        IFormFile CvFile { get; set; }
+        public IFormFile CvFile { get; set; }
     }
 }

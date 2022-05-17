@@ -81,10 +81,10 @@ namespace MetaHR_API.Controllers
         // TODO
         // POST api/<JobApplicationsController>
         [HttpPost]
-        public async Task<IActionResult> Create(CreateJobApplicationCommand cmd)
+        public async Task<IActionResult> Create([FromForm] CreateJobApplicationCommand cmd)
         {
             var x = 12;
-            Console.WriteLine(x + 12);
+            Console.WriteLine(x+12);
             throw new NotImplementedException();
         }
 
