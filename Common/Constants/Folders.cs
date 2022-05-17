@@ -9,5 +9,6 @@ namespace Common.Constants
     public static class Folders
     {
         public static string ProfilePictures = "profile-pictures";
+        public static string Cvs = "cvs";
     }
 }

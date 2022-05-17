@@ -1,4 +1,5 @@
-﻿using DataAccess.Data;
+﻿using Common;
+using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Models.Commands.Announcements;
 using Models.DTOs;
@@ -21,7 +22,7 @@ namespace Business.Announcements
             _db = db;
         }
 
-        public async Task<AnnouncementDTO> GetById(int announcementId)
+        public async Task<AnnouncementDTO?> GetById(int announcementId)
         {
             var announcement = await _db
                 .Announcements
@@ -33,33 +34,40 @@ namespace Business.Announcements
             return announcement;
         }
 
-        public async Task<IEnumerable<AnnouncementDTO>> GetAll(int pageNumber)
+        public async Task<PagedResult<AnnouncementDTO>> GetAll(int pageNumber, int pageSize = 10)
         {
-            var skip = (pageNumber - 1) * 10;
             var announcements = await _db
                 .Announcements
                 .Include(a => a.Author)
                 .Include(a => a.Department)
-                .Skip(skip)
-                .Take(10)
+                .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(AnnouncementToAnnouncementDTOExpression)
                 .ToListAsync();
-            return announcements;
+
+            int totalCount = await _db
+                .Announcements
+                .CountAsync();
+
+            return announcements.GetPagedResult(totalCount);
         }
 
-        public async Task<IEnumerable<AnnouncementDTO>> GetGlobalAndFromDepartment(int departmentId, int pageNumber)
+        public async Task<PagedResult<AnnouncementDTO>> GetGlobalAndFromDepartment(int departmentId, int pageNumber, int pageSize = 10)
         {
-            var skip = (pageNumber - 1) * 10;
             var announcements = await _db
                 .Announcements
                 .Include(a => a.Author)
                 .Include(a => a.Department)
-                .Skip(skip)
-                .Take(10)
                 .Where(a => a.DepartmentId == departmentId || a.DepartmentId == null)
+                .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(AnnouncementToAnnouncementDTOExpression)
                 .ToListAsync();
-            return announcements;
+
+            int totalCount = await _db
+                .Announcements
+                .Where(a => a.DepartmentId == departmentId || a.DepartmentId == null)
+                .CountAsync();
+
+            return announcements.GetPagedResult(totalCount);
         }
 
         public async Task<CommandResult> Create(CreateAnnouncementCommand cmd, int? departmentId, string authorId)

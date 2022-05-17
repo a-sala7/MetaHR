@@ -1,5 +1,6 @@
 ﻿using Business.Announcements;
 using Business.Employees;
+using Common;
 using Common.Constants;
 using DataAccess.Data;
 using MetaHR_API.Utility;
@@ -49,21 +50,24 @@ namespace MetaHR_API.Controllers
 
         [HttpGet]
         [Authorize(Roles = Roles.AdminsAndHR + "," + Roles.Employee)]
-        public async Task<IActionResult> GetAll(int pageNumber)
+        public async Task<IActionResult> GetAll(int pageNumber, int pageSize = 10)
         {
             if (User.IsInRole(Roles.Employee))
             {
                 //only get ones visible to him
                 EmployeeDTO emp = await _employeeRepository.GetById(User.GetId());
 
-                IEnumerable<AnnouncementDTO> announcements = await
-                    _announcementRepo.GetGlobalAndFromDepartment(emp.DepartmentId, pageNumber: pageNumber);
+                PagedResult<AnnouncementDTO> announcements = await
+                    _announcementRepo
+                    .GetGlobalAndFromDepartment(emp.DepartmentId, 
+                    pageNumber: pageNumber, pageSize: pageSize);
 
                 return Ok(announcements);
             }
             else
             {
-                IEnumerable<AnnouncementDTO> announcements = await _announcementRepo.GetAll(pageNumber);
+                PagedResult<AnnouncementDTO> announcements = await _announcementRepo
+                    .GetAll(pageNumber: pageNumber, pageSize: pageSize);
                 return Ok(announcements);
             }
         }

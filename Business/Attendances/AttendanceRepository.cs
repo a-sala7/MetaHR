@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Models.Commands.Attendances;
@@ -23,19 +24,26 @@ namespace Business.Attendances
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AttendanceDTO>> GetByEmployeeId(string employeeId)
+        public async Task<PagedResult<AttendanceDTO>> GetByEmployeeId(string employeeId,
+            int pageNumber, int pageSize = 10)
         {
             List<Attendance>? attendances = await _db
                 .Attendances
                 .Where(a => a.EmployeeId == employeeId)
+                .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .ToListAsync();
+
+            int totalCount = await _db
+                .Attendances
+                .Where(a => a.EmployeeId == employeeId)
+                .CountAsync();
 
             IEnumerable<AttendanceDTO>? dtos = _mapper
                 .Map<IEnumerable<Attendance>,
                 IEnumerable<AttendanceDTO>>
                 (attendances);
 
-            return dtos;
+            return dtos.GetPagedResult(totalCount);
         }
 
         public async Task<CommandResult> Create(CreateAttendanceCommand cmd)
@@ -43,6 +51,13 @@ namespace Business.Attendances
             if(cmd.Date > DateTime.Now)
             {
                 return CommandResult.GetErrorResult("Can't log attendance for future date!");
+            }
+
+            bool employeeExists = await _db.Employees
+                .AnyAsync(e => e.Id == cmd.EmployeeId);
+            if(employeeExists == false)
+            {
+                return CommandResult.GetNotFoundResult("Employee", cmd.EmployeeId);
             }
 
             bool employeeAlreadyLoggedToday = await _db

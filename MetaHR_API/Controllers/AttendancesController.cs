@@ -1,4 +1,5 @@
 ﻿using Business.Attendances;
+using Common;
 using Common.Constants;
 using MetaHR_API.Utility;
 using Microsoft.AspNetCore.Authorization;
@@ -23,9 +24,11 @@ namespace MetaHR_API.Controllers
 
         [HttpGet("getByEmployeeId/{employeeId}")]
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
-        public async Task<IActionResult> GetByEmployeeId(string employeeId)
+        public async Task<IActionResult> GetByEmployeeId(string employeeId, int pageNumber, int pageSize = 10)
         {
-            IEnumerable<AttendanceDTO>? atts = await _repo.GetByEmployeeId(employeeId);
+            PagedResult<AttendanceDTO>? atts = await _repo
+                .GetByEmployeeId(employeeId, pageNumber: pageNumber, pageSize: pageSize);
+
             return Ok(atts);
         }
 

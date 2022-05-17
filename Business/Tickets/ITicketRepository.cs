@@ -1,4 +1,5 @@
-﻿using Models.Commands.Tickets;
+﻿using Common;
+using Models.Commands.Tickets;
 using Models.DTOs;
 using Models.Responses;
 using System;
@@ -14,7 +15,7 @@ namespace Business.Tickets
         Task<TicketDTO> GetById(int ticketId);
         Task<CommandResult> CreateTicket(string creatorId, CreateTicketCommand cmd);
         Task<CommandResult> CloseOrOpenTicket(int ticketId, bool isOpen);
-        Task<IEnumerable<TicketDTO>> GetAll(int pageNumber);
+        Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize);
         Task<IEnumerable<TicketDTO>> GetByCreator(string creatorId);
         Task<IEnumerable<TicketDTO>> GetTicketsAwaitingResponse();
         Task<IEnumerable<TicketMessageDTO>> GetMessages(int ticketId);

@@ -1,4 +1,5 @@
-﻿using Models.Commands.Announcements;
+﻿using Common;
+using Models.Commands.Announcements;
 using Models.DTOs;
 using Models.Responses;
 using System;
@@ -11,11 +12,11 @@ namespace Business.Announcements
 {
     public interface IAnnouncementRepository
     {
-        Task<IEnumerable<AnnouncementDTO>> GetAll(int pageNumber);
-        Task<IEnumerable<AnnouncementDTO>> GetGlobalAndFromDepartment(int departmentId, int pageNumber);
+        Task<PagedResult<AnnouncementDTO>> GetAll(int pageNumber, int pageSize = 10);
+        Task<PagedResult<AnnouncementDTO>> GetGlobalAndFromDepartment(int departmentId, int pageNumber, int pageSize = 10);
         Task<CommandResult> Create(CreateAnnouncementCommand cmd, int? departmentId, string authorId);
         Task<CommandResult> Update(int announcementId, UpdateAnnouncementCommand cmd);
         Task<CommandResult> Delete(int announcementId);
-        Task<AnnouncementDTO> GetById(int announcementId);
+        Task<AnnouncementDTO?> GetById(int announcementId);
     }
 }

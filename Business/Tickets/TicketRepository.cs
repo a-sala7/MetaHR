@@ -1,4 +1,5 @@
-﻿using DataAccess.Data;
+﻿using Common;
+using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Models.Commands.Tickets;
 using Models.DTOs;
@@ -95,21 +96,22 @@ namespace Business.Tickets
             return CommandResult.SuccessResult;
         }
 
-        public async Task<IEnumerable<TicketDTO>> GetAll(int pageNumber)
+        public async Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize)
         {
-            var skip = (pageNumber - 1)*10;
             var tickets = await _db
                 .Tickets
                 .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
                 .OrderByDescending(t => t.CreatedAt)
-                .Skip(skip)
-                .Take(10)
+                .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
 
-            return tickets;
+            var totalCount = await _db.
+                Tickets.CountAsync();
+
+            return tickets.GetPagedResult(totalCount);
         }
 
         public async Task<IEnumerable<TicketDTO>> GetByCreator(string creatorId)

@@ -1,4 +1,5 @@
-﻿using Models.Commands.Attendances;
+﻿using Common;
+using Models.Commands.Attendances;
 using Models.DTOs;
 using Models.Responses;
 using System;
@@ -11,7 +12,7 @@ namespace Business.Attendances
 {
     public interface IAttendanceRepository
     {
-        Task<IEnumerable<AttendanceDTO>> GetByEmployeeId(string employeeId);
+        Task<PagedResult<AttendanceDTO>> GetByEmployeeId(string employeeId, int pageNumber, int pageSize = 10);
         Task<CommandResult> Create(CreateAttendanceCommand cmd);
         Task<CommandResult> Delete(int id);
     }

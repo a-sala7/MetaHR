@@ -1,4 +1,5 @@
 ﻿using Business.Tickets;
+using Common;
 using Common.Constants;
 using MetaHR_API.Utility;
 using Microsoft.AspNetCore.Authorization;
@@ -50,9 +51,11 @@ namespace MetaHR_API.Controllers
 
         [HttpGet]
         [Authorize(Roles = Roles.HRSenior + "," + Roles.HRJunior)]
-        public async Task<IActionResult> GetAll(int pageNumber = 1)
+        public async Task<IActionResult> GetAll(int pageNumber, int pageSize = 10)
         {
-            var tickets = await _ticketRepository.GetAll(pageNumber);
+            PagedResult<TicketDTO> tickets = await _ticketRepository
+                .GetAll(pageNumber: pageNumber, pageSize: pageSize);
+
             return Ok(tickets);
         }
 
