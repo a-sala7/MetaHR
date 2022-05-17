@@ -36,6 +36,11 @@ namespace DataAccess.DbInitializer
             }
         }
 
+        public async Task Migrate()
+        {
+            await _db.Database.MigrateAsync();
+        }
+
         public async Task SeedAdminUser()
         {
             var adminInDb = await _userManager.FindByEmailAsync("admin@test.com");

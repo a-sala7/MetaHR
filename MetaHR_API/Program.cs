@@ -56,8 +56,20 @@ builder.Services.AddSwaggerGen(o =>
     });
 });
 
-string dbConString = builder.Configuration.GetValue<string>("METAHR_DB_CONSTRING");
+string dbConString = "";
+ApiConfiguration apiConfiguration = new();
+dbConString = builder.Configuration.GetValue<string>("METAHR_DB_CONSTRING");
 
+if (builder.Environment.IsDevelopment())
+{
+    apiConfiguration = builder.Configuration.GetSection("METAHR_API_CONFIGURATION").Get<ApiConfiguration>();
+}
+else
+{
+    apiConfiguration.ValidAudience = builder.Configuration.GetValue<string>("METAHR_APICFG_VALIDAUDIENCE");
+    apiConfiguration.ValidIssuer = builder.Configuration.GetValue<string>("METAHR_APICFG_VALIDISSUER");
+    apiConfiguration.SecretKey = builder.Configuration.GetValue<string>("METAHR_APICFG_KEY");
+}
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(dbConString);
@@ -76,8 +88,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-
-var apiConfiguration = builder.Configuration.GetSection("METAHR_API_CONFIGURATION").Get<ApiConfiguration>();
 
 builder.Services.AddCors(options =>
 {
@@ -142,7 +152,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-  
+
 }
 
 app.UseHttpsRedirection();
@@ -152,6 +162,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.InitializeDatabase().GetAwaiter().GetResult();
+app.InitializeDatabase(app.Environment.EnvironmentName).GetAwaiter().GetResult();
 
 app.Run();

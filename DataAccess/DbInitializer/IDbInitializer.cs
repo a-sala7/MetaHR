@@ -10,5 +10,6 @@ namespace DataAccess.DbInitializer
     {
         Task InitializeRoles();
         Task SeedAdminUser();
+        Task Migrate();
     }
 }
