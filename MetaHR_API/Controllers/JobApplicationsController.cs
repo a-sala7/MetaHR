@@ -81,9 +81,10 @@ namespace MetaHR_API.Controllers
         // TODO
         // POST api/<JobApplicationsController>
         [HttpPost]
-        [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> Create(CreateJobApplicationCommand cmd)
         {
+            var x = 12;
+            Console.WriteLine(x + 12);
             throw new NotImplementedException();
         }
 
