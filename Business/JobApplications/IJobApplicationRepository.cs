@@ -20,5 +20,6 @@ namespace Business.JobApplications
         Task<CommandResult> Create(CreateJobApplicationCommand cmd);
         Task<CommandResult> ChangeStage(int id, JobApplicationStage newStage);
         Task<CommandResult> Delete(int id);
+        Task<string> GetCvURL(int jobApplicationId);
     }
 }

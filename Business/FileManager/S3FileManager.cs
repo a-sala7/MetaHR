@@ -96,5 +96,16 @@ namespace Business.FileManager
                 throw new ArgumentException("Invalid folder name.");
             }
         }
+
+        public async Task<string> GetPreSignedURLForKey(string key)
+        {
+            var req = new GetPreSignedUrlRequest()
+            {
+                Key = key,
+                BucketName = "metahrdev",
+                Expires = DateTime.UtcNow.AddMinutes(10)
+            };
+            return _client.GetPreSignedURL(req);
+        }
     }
 }

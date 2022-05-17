@@ -11,6 +11,7 @@ using Models.Commands.Departments;
 using Models.Commands.Employees;
 using Models.Commands.Notes;
 using Models.Commands.Attendances;
+using Models.Commands.JobApplications;
 
 namespace Business.AutoMapper
 {
@@ -30,6 +31,7 @@ namespace Business.AutoMapper
             CreateMap<UpdateEmployeeCommand, Employee>();
             CreateMap<CreateEmployeeNoteCommand, EmployeeNote>();
             CreateMap<CreateAttendanceCommand, Attendance>();
+            CreateMap<CreateJobApplicationCommand, JobApplication>();
         }
     }
 }

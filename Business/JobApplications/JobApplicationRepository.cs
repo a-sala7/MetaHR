@@ -1,4 +1,7 @@
-﻿using Common;
+﻿using AutoMapper;
+using Business.FileManager;
+using Common;
+using Common.Constants;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Models.Commands.JobApplications;
@@ -16,10 +19,14 @@ namespace Business.JobApplications
     public class JobApplicationRepository : IJobApplicationRepository
     {
         private readonly ApplicationDbContext _db;
-
-        public JobApplicationRepository(ApplicationDbContext db)
+        private readonly IFileManager _fileManager;
+        private readonly IMapper _mapper;
+        public JobApplicationRepository(ApplicationDbContext db,
+            IFileManager fileManager, IMapper mapper)
         {
             _db = db;
+            _fileManager = fileManager;
+            _mapper = mapper;
         }
 
         public async Task<PagedResult<JobApplicationDTO>> GetAll(int pageNumber, int pageSize = 10)
@@ -41,7 +48,7 @@ namespace Business.JobApplications
         {
             var app = await _db.JobApplications
                 .Select(JAToJADTOExpression)
-                .FirstOrDefaultAsync(ja => ja.Id == id); ;
+                .FirstOrDefaultAsync(ja => ja.Id == id);
 
             return app;
         }
@@ -98,20 +105,71 @@ namespace Business.JobApplications
 
             return apps.GetPagedResult(totalCount);
         }
-        //TODO
-        public Task<CommandResult> Create(CreateJobApplicationCommand cmd)
+        
+        public async Task<CommandResult> Create(CreateJobApplicationCommand cmd)
         {
-            throw new NotImplementedException();
+            var ext = Path.GetExtension(cmd.CvFile.FileName);
+            string newFileName = Guid.NewGuid().ToString() + ext;
+            string cvUrl = await _fileManager.UploadFile(
+                fileName: newFileName,
+                stream: cmd.CvFile.OpenReadStream(),
+                contentType: cmd.CvFile.ContentType,
+                folder: Folders.Cvs
+                );
+            
+            JobApplication ja = _mapper.Map<CreateJobApplicationCommand, JobApplication>(cmd);
+            ja.ReceivedOnUtc = DateTime.UtcNow;
+            ja.CvURL = cvUrl;
+            _db.JobApplications.Add(ja);
+            
+            await _db.SaveChangesAsync();
+            return CommandResult.SuccessResult;
         }
-        //TODO
-        public Task<CommandResult> ChangeStage(int id, JobApplicationStage newStage)
+
+        public async Task<CommandResult> ChangeStage(int id, JobApplicationStage newStage)
         {
-            throw new NotImplementedException();
+            var app = await _db.JobApplications
+                .FirstOrDefaultAsync(ja => ja.Id == id);
+            
+            if (app == null)
+                return CommandResult.GetNotFoundResult("Job Application", id);
+
+
+            app.Stage = newStage;
+            _db.JobApplications.Update(app);
+
+            await _db.SaveChangesAsync();
+            return CommandResult.SuccessResult;
         }
-        //TODO
-        public Task<CommandResult> Delete(int id)
+
+        public async Task<CommandResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            var app = await _db.JobApplications
+                .FirstOrDefaultAsync(ja => ja.Id == id);
+
+            if (app == null)
+                return CommandResult.GetNotFoundResult("Job Application", id);
+
+
+            _db.JobApplications.Remove(app);
+            
+            await _db.SaveChangesAsync();
+            return CommandResult.SuccessResult;
+        }
+
+        public async Task<string> GetCvURL(int jobApplicationId)
+        {
+            JobApplication? ja = await _db
+                .JobApplications
+                .FirstOrDefaultAsync(ja => ja.Id == jobApplicationId);
+
+            if (ja == null)
+                throw new Exception($"Job application with id {jobApplicationId} not found");
+
+
+            string key = Folders.Cvs + "/" + Path.GetFileName(ja.CvURL);
+
+            return await _fileManager.GetPreSignedURLForKey(key);
         }
 
         private readonly Expression<Func<JobApplication, JobApplicationDTO>> JAToJADTOExpression
@@ -125,7 +183,6 @@ namespace Business.JobApplications
                FirstName = ja.FirstName,
                LastName = ja.LastName,
                Phone = ja.Phone,
-               CvURL = ja.CvURL,
                Stage = ja.Stage.ToString(),
                GitHubURL = ja.GitHubURL,
                LinkedInURL = ja.LinkedInURL,

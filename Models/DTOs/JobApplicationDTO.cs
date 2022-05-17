@@ -23,6 +23,5 @@ namespace Models.DTOs
         public string? LinkedInURL { get; set; }
         public string? GitHubURL { get; set; }
         public string? PersonalWebsite { get; set; }
-        public string CvURL { get; set; }
     }
 }

@@ -23,7 +23,6 @@ namespace MetaHR_API.Controllers
             _repo = repo;
         }
 
-        // GET: api/<JobApplicationsController>
         [HttpGet]
         [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> GetAll(int pageNumber, int pageSize = 10)
@@ -62,7 +61,6 @@ namespace MetaHR_API.Controllers
             return Ok(apps);
         }
 
-        // GET api/<JobApplicationsController>/5
         [HttpGet("{id}")]
         [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> Get(int id)
@@ -78,17 +76,18 @@ namespace MetaHR_API.Controllers
             return Ok(app);
         }
 
-        // TODO
-        // POST api/<JobApplicationsController>
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateJobApplicationCommand cmd)
         {
-            var x = 12;
-            Console.WriteLine(x+12);
-            throw new NotImplementedException();
+            var verifyRes = FileVerifier.VerifyPdf(cmd.CvFile);
+            if(verifyRes.IsSuccessful == false)
+            {
+                return CommandResultResolver.Resolve(verifyRes);
+            }
+            var cmdResult = await _repo.Create(cmd);
+            return CommandResultResolver.Resolve(verifyRes);
         }
 
-        // POST api/<JobApplicationsController>/changeStage/5
         [HttpPost("changeStage/{id}")]
         [Authorize(Roles = Roles.AdminsAndHR)]
         public async Task<IActionResult> ChangeStage(int id, JobApplicationStage stage)
@@ -98,14 +97,36 @@ namespace MetaHR_API.Controllers
             return CommandResultResolver.Resolve(cmdResult);
         }
 
-        // DELETE api/<JobApplicationsController>/5
-        [HttpDelete("{id}")]
+        [HttpGet("{id}/cvURL")]
         [Authorize(Roles = Roles.AdminsAndHR)]
+        public async Task<IActionResult> GetJobApplicationCvURL(int id)
+        {
+                return Ok(await _repo.GetCvURL(id));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.HRJunior + Roles.HRSenior)]
         public async Task<IActionResult> Delete(int id)
         {
             CommandResult cmdResult = await _repo.Delete(id);
 
             return CommandResultResolver.Resolve(cmdResult);
+        }
+
+        //TODO
+        [HttpGet("{id}/notes/")]
+        [Authorize(Roles = Roles.HRJunior + Roles.HRSenior)]
+        public async Task<IActionResult> GetNotes(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        //TODO
+        [HttpPost("{id}/notes/")]
+        [Authorize(Roles = Roles.HRJunior + Roles.HRSenior)]
+        public async Task<IActionResult> CreateNote(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

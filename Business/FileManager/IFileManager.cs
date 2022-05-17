@@ -10,5 +10,6 @@ namespace Business.FileManager
     {
         Task<string> UploadFile(string fileName, Stream stream, string contentType, string folder);
         Task DeleteFile(string fileName, string folder);
+        Task<string> GetPreSignedURLForKey(string key);
     }
 }
