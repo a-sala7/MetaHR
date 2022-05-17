@@ -15,7 +15,7 @@ namespace Business.Tickets
         Task<TicketDTO> GetById(int ticketId);
         Task<CommandResult> CreateTicket(string creatorId, CreateTicketCommand cmd);
         Task<CommandResult> CloseOrOpenTicket(int ticketId, bool isOpen);
-        Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize);
+        Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize = 10);
         Task<IEnumerable<TicketDTO>> GetByCreator(string creatorId);
         Task<IEnumerable<TicketDTO>> GetTicketsAwaitingResponse();
         Task<IEnumerable<TicketMessageDTO>> GetMessages(int ticketId);

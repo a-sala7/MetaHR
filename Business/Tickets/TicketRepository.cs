@@ -96,7 +96,7 @@ namespace Business.Tickets
             return CommandResult.SuccessResult;
         }
 
-        public async Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize)
+        public async Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize = 10)
         {
             var tickets = await _db
                 .Tickets

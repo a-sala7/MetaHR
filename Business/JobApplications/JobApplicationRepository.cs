@@ -98,17 +98,17 @@ namespace Business.JobApplications
 
             return apps.GetPagedResult(totalCount);
         }
-
+        //TODO
         public Task<CommandResult> Create(CreateJobApplicationCommand cmd)
         {
             throw new NotImplementedException();
         }
-
+        //TODO
         public Task<CommandResult> ChangeStage(int id, JobApplicationStage newStage)
         {
             throw new NotImplementedException();
         }
-
+        //TODO
         public Task<CommandResult> Delete(int id)
         {
             throw new NotImplementedException();
