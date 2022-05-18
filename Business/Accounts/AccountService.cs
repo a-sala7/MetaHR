@@ -48,6 +48,7 @@ namespace Business.Accounts
 
             if(signInResult.Succeeded)
             {
+                var roles = await _userManager.GetRolesAsync(user);
                 var token = await GetToken(user);
                 var userInfo = new LocalUserInfo
                 {
@@ -55,7 +56,8 @@ namespace Business.Accounts
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Token = token
+                    Token = token,
+                    Roles = roles
                 };
                 return LoginResponse.SuccessResponse(userInfo);
             }
