@@ -99,7 +99,7 @@ namespace Business.FileManager
 
         public async Task<string> GetPreSignedURL(string fileName, string folder)
         {
-            var key = Path.Combine(folder, fileName);
+            var key = folder + "/" + fileName;
             var req = new GetPreSignedUrlRequest()
             {
                 Key = key,

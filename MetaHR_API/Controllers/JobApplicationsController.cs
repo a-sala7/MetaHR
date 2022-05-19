@@ -85,7 +85,7 @@ namespace MetaHR_API.Controllers
                 return CommandResultResolver.Resolve(verifyRes);
             }
             var cmdResult = await _repo.Create(cmd);
-            return CommandResultResolver.Resolve(verifyRes);
+            return CommandResultResolver.Resolve(cmdResult);
         }
 
         [HttpPost("changeStage/{id}")]

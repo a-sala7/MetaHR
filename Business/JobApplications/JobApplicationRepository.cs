@@ -110,7 +110,8 @@ namespace Business.JobApplications
         {
             if(cmd.JobPostingId != null)
             {
-                var jp = _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == cmd.JobPostingId.Value);
+                JobPosting? jp = await _db.JobPostings
+                    .FirstOrDefaultAsync(jp => jp.Id == cmd.JobPostingId.Value);
                 if(jp == null)
                 {
                     return CommandResult.GetNotFoundResult("Job Posting", cmd.JobPostingId.Value);
