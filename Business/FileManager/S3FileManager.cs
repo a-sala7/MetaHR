@@ -97,8 +97,9 @@ namespace Business.FileManager
             }
         }
 
-        public async Task<string> GetPreSignedURLForKey(string key)
+        public async Task<string> GetPreSignedURL(string fileName, string folder)
         {
+            var key = Path.Combine(folder, fileName);
             var req = new GetPreSignedUrlRequest()
             {
                 Key = key,

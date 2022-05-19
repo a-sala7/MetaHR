@@ -108,6 +108,14 @@ namespace Business.JobApplications
         
         public async Task<CommandResult> Create(CreateJobApplicationCommand cmd)
         {
+            if(cmd.JobPostingId != null)
+            {
+                var jp = _db.JobPostings.FirstOrDefaultAsync(jp => jp.Id == cmd.JobPostingId.Value);
+                if(jp == null)
+                {
+                    return CommandResult.GetNotFoundResult("Job Posting", cmd.JobPostingId.Value);
+                }
+            }
             var ext = Path.GetExtension(cmd.CvFile.FileName);
             string newFileName = Guid.NewGuid().ToString() + ext;
             string cvUrl = await _fileManager.UploadFile(
@@ -150,6 +158,11 @@ namespace Business.JobApplications
             if (app == null)
                 return CommandResult.GetNotFoundResult("Job Application", id);
 
+            if(string.IsNullOrWhiteSpace(app.CvURL) == false)
+            {
+                var cvFileName = Path.GetFileName(app.CvURL);
+                await _fileManager.DeleteFile(cvFileName, Folders.Cvs);
+            }
 
             _db.JobApplications.Remove(app);
             
@@ -167,9 +180,7 @@ namespace Business.JobApplications
                 throw new Exception($"Job application with id {jobApplicationId} not found");
 
 
-            string key = Folders.Cvs + "/" + Path.GetFileName(ja.CvURL);
-
-            return await _fileManager.GetPreSignedURLForKey(key);
+            return await _fileManager.GetPreSignedURL(fileName: Path.GetFileName(ja.CvURL), folder: Folders.Cvs);
         }
 
         private readonly Expression<Func<JobApplication, JobApplicationDTO>> JAToJADTOExpression
