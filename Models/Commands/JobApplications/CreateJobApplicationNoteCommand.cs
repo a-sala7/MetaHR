@@ -5,20 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Data
+namespace Models.Commands.JobApplications
 {
-    public class NoteBase
+    public class CreateJobApplicationNoteCommand
     {
-        public int Id { get; set; }
-
         [Required]
-        public string AuthorId { get; set; }
-        public virtual Employee Author { get; set; }
-
+        public int JobApplicationId { get; set; }
         [Required]
         [MaxLength(1000)]
         public string Content { get; set; }
-
-        public DateTime CreatedAtUtc { get; set; }
     }
 }

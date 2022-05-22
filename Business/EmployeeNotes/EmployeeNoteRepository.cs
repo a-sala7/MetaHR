@@ -41,7 +41,8 @@ namespace Business.EmployeeNotes
 
             var newNote = _mapper.Map<CreateEmployeeNoteCommand, EmployeeNote>(cmd);
             newNote.AuthorId = writtenById;
-            
+            newNote.CreatedAtUtc = DateTime.UtcNow;
+
             _db.Add(newNote);
             
             await _db.SaveChangesAsync();
@@ -89,16 +90,13 @@ namespace Business.EmployeeNotes
 
         public async Task<EmployeeNoteDTO> GetById(int id)
         {
-            var note = await _db
+            var noteDto = await _db
                 .EmployeeNotes
                 .Include(n => n.Employee)
                 .Include(n => n.Author)
+                .Select(NoteToNoteDTOExpression)
                 .FirstOrDefaultAsync(n => n.Id == id);
-
-            if(note is null)
-                return null;
             
-            var noteDto = NoteToNoteDTOExpression.Compile().Invoke(note);
             return noteDto;
         }
 
@@ -123,7 +121,8 @@ namespace Business.EmployeeNotes
                AuthorName = n.Author.FirstName + " " + n.Author.LastName,
                EmployeeId = n.EmployeeId,
                EmployeeName = n.Employee.FirstName + " " + n.Employee.LastName,
-               Content = n.Content
+               Content = n.Content,
+               CreatedAtUtc = n.CreatedAtUtc
            };
     }
 }

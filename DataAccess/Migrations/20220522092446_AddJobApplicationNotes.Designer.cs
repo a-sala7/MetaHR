@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220522092446_AddJobApplicationNotes")]
+    partial class AddJobApplicationNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +58,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Announcements", (string)null);
+                    b.ToTable("Announcements");
                 });
 
             modelBuilder.Entity("DataAccess.Data.ApplicationUser", b =>
@@ -157,7 +159,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendances");
                 });
 
             modelBuilder.Entity("DataAccess.Data.Department", b =>
@@ -175,7 +177,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("DataAccess.Data.EmployeeNote", b =>
@@ -208,7 +210,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("EmployeeNotes", (string)null);
+                    b.ToTable("EmployeeNotes");
                 });
 
             modelBuilder.Entity("DataAccess.Data.JobApplication", b =>
@@ -265,7 +267,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("ReceivedOnUtc");
 
-                    b.ToTable("JobApplications", (string)null);
+                    b.ToTable("JobApplications");
                 });
 
             modelBuilder.Entity("DataAccess.Data.JobApplicationNote", b =>
@@ -297,7 +299,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("JobApplicationId");
 
-                    b.ToTable("JobApplicationNotes", (string)null);
+                    b.ToTable("JobApplicationNotes");
                 });
 
             modelBuilder.Entity("DataAccess.Data.JobPosting", b =>
@@ -322,7 +324,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JobPostings", (string)null);
+                    b.ToTable("JobPostings");
                 });
 
             modelBuilder.Entity("DataAccess.Data.Ticket", b =>
@@ -355,7 +357,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("DataAccess.Data.TicketMessage", b =>
@@ -390,7 +392,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("TicketMessages", (string)null);
+                    b.ToTable("TicketMessages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -566,7 +568,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("IsDirector");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("DataAccess.Data.Announcement", b =>

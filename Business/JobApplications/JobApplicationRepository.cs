@@ -184,6 +184,89 @@ namespace Business.JobApplications
             return await _fileManager.GetPreSignedURL(fileName: Path.GetFileName(ja.CvURL), folder: Folders.Cvs);
         }
 
+        //NOTES
+
+        public async Task<JobApplicationNoteDTO> GetNoteById(int noteId)
+        {
+            JobApplicationNote note = await _db.JobApplicationNotes
+                .FirstOrDefaultAsync(n => n.Id == noteId);
+
+            return _mapper.Map<JobApplicationNote, JobApplicationNoteDTO>(note);
+        }
+
+        public async Task<IEnumerable<JobApplicationNoteDTO>> GetNotes(int jobApplicationId, string authorId)
+        {
+            IEnumerable<JobApplicationNote> notes = await _db.JobApplicationNotes
+                .Where(n => n.JobApplicationId == jobApplicationId
+                && n.AuthorId == authorId)
+                .ToListAsync();
+            
+            var noteDtos = _mapper.Map<IEnumerable<JobApplicationNote>,
+                IEnumerable<JobApplicationNoteDTO>>(notes);
+
+            return noteDtos;
+        }
+
+        public async Task<CommandResult> CreateNote(string authorId, CreateJobApplicationNoteCommand cmd)
+        {
+            JobApplication? ja = await _db.JobApplications
+                .FirstOrDefaultAsync(ja => ja.Id == cmd.JobApplicationId);
+
+            if(ja == null)
+            {
+                return CommandResult.GetNotFoundResult("Job Application", cmd.JobApplicationId);
+            }
+
+            var emp = await _db.Employees.FirstOrDefaultAsync(emp => emp.Id == authorId);
+
+            if(emp == null)
+            {
+                return CommandResult.GetNotFoundResult("Employee", authorId);
+            }
+
+            JobApplicationNote note = _mapper.Map<CreateJobApplicationNoteCommand, 
+                JobApplicationNote>(cmd);
+            note.CreatedAtUtc = DateTime.UtcNow;
+            note.AuthorId = authorId;
+
+            _db.JobApplicationNotes.Add(note);
+            await _db.SaveChangesAsync();
+            
+            return CommandResult.SuccessResult;
+        }
+
+        public async Task<CommandResult> UpdateNote(UpdateJobApplicationNoteCommand cmd)
+        {
+            JobApplicationNote note = await _db.JobApplicationNotes
+                .FirstOrDefaultAsync(n => n.Id == cmd.NoteId);
+
+            if(note == null)
+            {
+                return CommandResult.GetNotFoundResult("Job Application Note", cmd.NoteId);
+            }
+
+            note.Content = cmd.Content;
+            _db.JobApplicationNotes.Update(note);
+            await _db.SaveChangesAsync();
+
+            return CommandResult.SuccessResult;
+        }
+
+        public async Task<CommandResult> DeleteNote(int noteId)
+        {
+            JobApplicationNote note = await _db.JobApplicationNotes
+                .FirstOrDefaultAsync(n => n.Id == noteId);
+
+            if (note == null)
+            {
+                return CommandResult.GetNotFoundResult("Job Application Note", noteId);
+            }
+
+            _db.JobApplicationNotes.Remove(note);
+            await _db.SaveChangesAsync();
+            return CommandResult.SuccessResult;
+        }
+
         private readonly Expression<Func<JobApplication, JobApplicationDTO>> JAToJADTOExpression
            = ja => new JobApplicationDTO
            {

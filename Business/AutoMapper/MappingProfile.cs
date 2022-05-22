@@ -32,6 +32,7 @@ namespace Business.AutoMapper
             CreateMap<CreateEmployeeNoteCommand, EmployeeNote>();
             CreateMap<CreateAttendanceCommand, Attendance>();
             CreateMap<CreateJobApplicationCommand, JobApplication>();
+            CreateMap<CreateJobApplicationNoteCommand, JobApplicationNote>();
         }
     }
 }

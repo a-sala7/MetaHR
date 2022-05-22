@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace Models.DTOs
 {
-    public class EmployeeNoteDTO
+    public class JobApplicationNoteDTO
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public string AuthorId { get; set; }
-        public string AuthorName { get; set; }
-        public string EmployeeId { get; set; }
-        public string EmployeeName { get; set; }
         public DateTime CreatedAtUtc { get; set; }
+        public string AuthorId { get; set; }
+        public string JobApplicationId { get; set; }
     }
 }

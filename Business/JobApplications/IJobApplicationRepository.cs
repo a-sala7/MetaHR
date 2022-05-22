@@ -21,5 +21,11 @@ namespace Business.JobApplications
         Task<CommandResult> ChangeStage(int id, JobApplicationStage newStage);
         Task<CommandResult> Delete(int id);
         Task<string> GetCvURL(int jobApplicationId);
+        // NOTES
+        Task<JobApplicationNoteDTO> GetNoteById(int noteId);
+        Task<IEnumerable<JobApplicationNoteDTO>> GetNotes(int jobApplicationId, string authorId);
+        Task<CommandResult> CreateNote(string authorId, CreateJobApplicationNoteCommand cmd);
+        Task<CommandResult> UpdateNote(UpdateJobApplicationNoteCommand cmd);
+        Task<CommandResult> DeleteNote(int noteId);
     }
 }
