@@ -86,6 +86,11 @@ namespace MetaHR_API.Controllers
                 return CommandResultResolver.Resolve(res1);
             }
 
+            if(content.Length > 1000)
+            {
+                return BadRequest(CommandResult.GetErrorResult("Content is too long. Max 1000 characters"));
+            }
+
             if (User.IsInRole(Roles.Employee))
             {
                 if(isInternalNote)
