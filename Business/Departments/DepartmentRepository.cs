@@ -58,6 +58,13 @@ namespace Business.Departments
 
         public async Task<CommandResult> Create(CreateDepartmentCommand cmd)
         {
+            bool dpExistsWithSameName = await _db.Departments.AnyAsync(d => d.Name == cmd.Name);
+            if (dpExistsWithSameName)
+            {
+                return CommandResult.GetErrorResult("A department with that name already exists!");
+            }
+
+
             var department = _mapper.Map<CreateDepartmentCommand, Department>(cmd);
             _db.Departments.Add(department);
 
