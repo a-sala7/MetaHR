@@ -97,7 +97,7 @@ namespace Business.Employees
                             UserId = emp.Id,
                             PasswordResetToken = token
                         };
-                        await _emailSender.SendEmailToNewUser(emailModel);
+                        await _emailSender.SendOnboardEmail(emailModel);
 
                         return CommandResult.SuccessResult;
                     }

@@ -61,8 +61,12 @@ builder.Services.AddSwaggerGen(o =>
 });
 
 string dbConString = "";
-ApiConfiguration apiConfiguration = new();
 dbConString = builder.Configuration.GetValue<string>("METAHR_DB_CONSTRING");
+
+string sendinblueKey = builder.Configuration.GetValue<string>("METAHR_SENDINBLUE_KEY");
+sib_api_v3_sdk.Client.Configuration.Default.AddApiKey("api-key", sendinblueKey);
+
+ApiConfiguration apiConfiguration = new();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -135,13 +139,15 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
 builder.Services.AddScoped<IEmployeeNoteRepository, EmployeeNoteRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IFileManager, S3FileManager>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+
+//builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
+builder.Services.AddScoped<IEmailSender, SendinblueEmailSender>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
