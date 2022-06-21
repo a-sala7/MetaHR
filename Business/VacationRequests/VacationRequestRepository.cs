@@ -29,8 +29,7 @@ namespace Business.VacationRequests
             List<VacationRequestDTO>? reqDtos = await _db
                 .VacationRequests
                 .OrderByDescending(vr => vr.CreatedAt)
-                .Skip(skip)
-                .Take(pageSize)
+                .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(vr => vr.Employee)
                 .ThenInclude(emp => emp.Department)
                 .Select(VRtoVRDTOExpression)
@@ -47,8 +46,7 @@ namespace Business.VacationRequests
                 .VacationRequests
                 .Where(vr => vr.EmployeeId == employeeId)
                 .OrderByDescending(vr => vr.CreatedAt)
-                .Skip(skip)
-                .Take(pageSize)
+                .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(vr => vr.Employee)
                 .ThenInclude(emp => emp.Department)
                 .Select(VRtoVRDTOExpression)

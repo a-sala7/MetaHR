@@ -44,7 +44,5 @@ namespace DataAccess.Data
         //cv
         [Required]
         public string CvURL { get; set; }
-
-
     }
 }

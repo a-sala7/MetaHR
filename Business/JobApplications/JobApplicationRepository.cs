@@ -32,6 +32,7 @@ namespace Business.JobApplications
         public async Task<PagedResult<JobApplicationDTO>> GetAll(int pageNumber, int pageSize = 10)
         {
             var apps = await _db.JobApplications
+                .OrderByDescending(ja => ja.ReceivedOnUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(ja => ja.JobPosting)
                 .Select(JAToJADTOExpression)
@@ -56,6 +57,7 @@ namespace Business.JobApplications
         public async Task<PagedResult<JobApplicationDTO>> GetUnread(int pageNumber, int pageSize = 10)
         {
             var apps = await _db.JobApplications
+                .OrderByDescending(ja => ja.ReceivedOnUtc)
                 .Where(ja => ja.Stage == JobApplicationStage.Unread)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(ja => ja.JobPosting)
@@ -73,6 +75,7 @@ namespace Business.JobApplications
         public async Task<PagedResult<JobApplicationDTO>> GetCompleted(int pageNumber, int pageSize = 10)
         {
             var apps = await _db.JobApplications
+                .OrderByDescending(ja => ja.ReceivedOnUtc)
                 .Where(ja => ja.Stage >= JobApplicationStage.Accepted)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(ja => ja.JobPosting)
@@ -90,6 +93,7 @@ namespace Business.JobApplications
         public async Task<PagedResult<JobApplicationDTO>> GetInProgress(int pageNumber, int pageSize = 10)
         {
             var apps = await _db.JobApplications
+                .OrderByDescending(ja => ja.ReceivedOnUtc)
                 .Where(ja => ja.Stage >= JobApplicationStage.PendingInterview
                 && ja.Stage <= JobApplicationStage.PendingDecision)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
@@ -197,6 +201,7 @@ namespace Business.JobApplications
         public async Task<IEnumerable<JobApplicationNoteDTO>> GetNotes(int jobApplicationId, string authorId)
         {
             IEnumerable<JobApplicationNote> notes = await _db.JobApplicationNotes
+                .OrderByDescending(n => n.CreatedAtUtc)
                 .Where(n => n.JobApplicationId == jobApplicationId
                 && n.AuthorId == authorId)
                 .ToListAsync();

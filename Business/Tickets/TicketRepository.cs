@@ -121,6 +121,7 @@ namespace Business.Tickets
                 .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(s => s.Department)
+                .OrderByDescending(t => t.CreatedAt)
                 .Where(t => t.CreatorId == creatorId)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
@@ -183,6 +184,7 @@ namespace Business.Tickets
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
                 .Where(t => t.IsAwaitingResponse)
+                .OrderByDescending(t => t.CreatedAt)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
 

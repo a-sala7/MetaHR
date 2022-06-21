@@ -40,6 +40,7 @@ namespace Business.Announcements
                 .Announcements
                 .Include(a => a.Author)
                 .Include(a => a.Department)
+                .OrderByDescending(a => a.CreatedAt)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(AnnouncementToAnnouncementDTOExpression)
                 .ToListAsync();
@@ -58,6 +59,7 @@ namespace Business.Announcements
                 .Include(a => a.Author)
                 .Include(a => a.Department)
                 .Where(a => a.DepartmentId == departmentId || a.DepartmentId == null)
+                .OrderByDescending(a => a.CreatedAt)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(AnnouncementToAnnouncementDTOExpression)
                 .ToListAsync();

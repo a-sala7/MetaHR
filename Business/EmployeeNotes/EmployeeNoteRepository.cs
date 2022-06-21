@@ -68,8 +68,9 @@ namespace Business.EmployeeNotes
                 .EmployeeNotes
                 .Include(n => n.Employee)
                 .Include(n => n.Author)
-                .Select(NoteToNoteDTOExpression)
+                .OrderByDescending(n => n.CreatedAtUtc)
                 .Where(n => n.EmployeeId == employeeId && n.AuthorId == authorId)
+                .Select(NoteToNoteDTOExpression)
                 .ToListAsync();
 
             return notesAbout;
@@ -81,8 +82,9 @@ namespace Business.EmployeeNotes
                 .EmployeeNotes
                 .Include(n => n.Employee)
                 .Include(n => n.Author)
-                .Select(NoteToNoteDTOExpression)
+                .OrderByDescending(n => n.CreatedAtUtc)
                 .Where(n => n.AuthorId == authorId)
+                .Select(NoteToNoteDTOExpression)
                 .ToListAsync();
 
             return notesBy;
