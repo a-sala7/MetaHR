@@ -23,6 +23,7 @@ namespace DataAccess.Data
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<JobApplicationNote> JobApplicationNotes { get; set; }
+        public DbSet<VacationRequest> VacationRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
