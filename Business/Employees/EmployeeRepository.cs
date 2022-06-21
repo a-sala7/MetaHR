@@ -73,6 +73,10 @@ namespace Business.Employees
             {
                 return CommandResult.GetErrorResult($"Department with ID {cmd.DepartmentId} not found.");
             }
+            if(cmd.Role == Roles.DepartmentDirector)
+            {
+                return CommandResult.GetErrorResult("Accounts cannot be created with the role DepartmentDirector. Please create an employee first then assign him as a director from departments list.");
+            }
             Employee emp = _mapper.Map<CreateEmployeeCommand, Employee>(cmd);
             using (var transaction = _db.Database.BeginTransaction())
             {

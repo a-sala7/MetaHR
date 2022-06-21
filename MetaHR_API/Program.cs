@@ -9,6 +9,7 @@ using Business.FileManager;
 using Business.JobApplications;
 using Business.JobPostings;
 using Business.Tickets;
+using Business.VacationRequests;
 using Common.ConfigurationClasses;
 using DataAccess.Data;
 using DataAccess.DbInitializer;
@@ -145,6 +146,7 @@ builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IFileManager, S3FileManager>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+builder.Services.AddScoped<IVacationRequestRepository, VacationRequestRepository>();
 
 //builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
 builder.Services.AddScoped<IEmailSender, SendinblueEmailSender>();
