@@ -11,6 +11,7 @@ namespace Models.DTOs
         public int Id { get; set; }
         public string AuthorId { get; set; }
         public string AuthorName { get; set; }
+        public string AuthorPfpURL { get; set; }
         public int? DepartmentId { get; set; }
         public string? DepartmentName { get; set; }
         public string Title { get; set; }

@@ -121,6 +121,7 @@ namespace Business.Announcements
                Content = a.Content,
                AuthorId = a.AuthorId,
                AuthorName = a.Author.FirstName + " " + a.Author.LastName,
+               AuthorPfpURL = a.Author.ProfilePictureURL,
                CreatedAt = a.CreatedAt,
                DepartmentId = a.DepartmentId,
                DepartmentName = a.Department.Name

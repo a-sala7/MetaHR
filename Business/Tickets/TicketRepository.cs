@@ -200,6 +200,7 @@ namespace Business.Tickets
                CreatorId = t.CreatorId,
                CreatorName = t.Creator.FirstName + " " + t.Creator.LastName,
                CreatorDepartmentName = t.Creator.Department.Name,
+               CreatorPfpURL = t.Creator.ProfilePictureURL,
                CreatedAt = t.CreatedAt,
                IsOpen = t.IsOpen,
                IsAwaitingResponse = t.IsAwaitingResponse
@@ -214,6 +215,7 @@ namespace Business.Tickets
                IsInternalNote = m.IsInternalNote,
                SenderId = m.SenderId,
                SenderName = m.Sender.FirstName + " " + m.Sender.LastName,
+               SenderPfpUrl = m.Sender.ProfilePictureURL,
                TimestampUtc = m.TimestampUtc
            };
     }
