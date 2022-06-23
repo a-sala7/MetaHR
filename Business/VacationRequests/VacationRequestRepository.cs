@@ -91,6 +91,7 @@ namespace Business.VacationRequests
                 EmployeeId = employeeId,
                 CreatedAt = DateTime.UtcNow,
                 State = VacationRequestState.Pending,
+                NumberOfDays = cmd.NumberOfDays,
                 FromDate = cmd.From.Date,
                 ToDate = to
             };
