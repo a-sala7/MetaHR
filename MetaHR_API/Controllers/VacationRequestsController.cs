@@ -19,9 +19,10 @@ namespace MetaHR_API.Controllers
         private readonly IVacationRequestRepository _repo;
         private readonly IEmployeeRepository _empRepo;
 
-        public VacationRequestsController(IVacationRequestRepository repo)
+        public VacationRequestsController(IVacationRequestRepository repo, IEmployeeRepository empRepo)
         {
             _repo = repo;
+            _empRepo = empRepo;
         }
 
         [HttpGet]

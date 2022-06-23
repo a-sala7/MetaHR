@@ -57,16 +57,16 @@ namespace Business.VacationRequests
 
         public async Task<CommandResult> Create(string employeeId, CreateVacationRequestCommand cmd)
         {
-            if(cmd.NumberOfDays < 1 || cmd.NumberOfDays > 14)
+            if (cmd.NumberOfDays < 1 || cmd.NumberOfDays > 14)
             {
                 return CommandResult.GetErrorResult("NumberOfDays must be between 1 and 14");
             }
             Employee? emp = await _db.Employees.FirstAsync(e => e.Id == employeeId);
             //if employee hired less than 3 months ago
             //don't allow him to request more than 1 day in a row
-            if(emp.DateHired.Date > DateTime.Now.Date.AddMonths(-3))
+            if (emp.DateHired.Date > DateTime.Now.Date.AddMonths(-3))
             {
-                if(cmd.NumberOfDays > 1)
+                if (cmd.NumberOfDays > 1)
                 {
                     return CommandResult.GetErrorResult("Employees hired less than 3 months ago can't request more than 1 consecutive vacation day.");
                 }
@@ -80,12 +80,27 @@ namespace Business.VacationRequests
                     return CommandResult.GetErrorResult("Employees hired less than 3 months ago can't request more than 1 consecutive vacation day.");
                 }
             }
+
             var to = cmd.From.Date.AddDays(cmd.NumberOfDays - 1);
-            if(await _db.VacationRequests.Where(vr => vr.EmployeeId == employeeId)
-                .AnyAsync(vr => vr.FromDate.Date == cmd.From.Date || vr.ToDate.Date == to))
+            if (await _db.VacationRequests.Where(vr => vr.EmployeeId == employeeId)
+                .AnyAsync(vr => vr.FromDate.Date == cmd.From.Date && vr.ToDate.Date == to))
             {
-                return CommandResult.GetErrorResult("You've already made an identical request with the same From/To dates.");
+                return CommandResult.GetErrorResult("You've already made an identical request.");
             }
+
+            if (
+                //current from date is in range of a previous request
+                await _db.VacationRequests.Where(vr => vr.EmployeeId == employeeId && vr.State == VacationRequestState.Approved)
+                .AnyAsync(vr => vr.FromDate.Date <= cmd.From.Date && vr.ToDate.Date >= cmd.From.Date)
+                ||
+                //current to date is in range of a previous request
+                await _db.VacationRequests.Where(vr => vr.EmployeeId == employeeId && vr.State == VacationRequestState.Approved)
+                .AnyAsync(vr => vr.FromDate.Date <= to && vr.ToDate.Date >= to)
+                )
+            {
+                return CommandResult.GetErrorResult("You've already made a similar request that was approved.");
+            }
+
             var vacationRequest = new VacationRequest
             {
                 EmployeeId = employeeId,
