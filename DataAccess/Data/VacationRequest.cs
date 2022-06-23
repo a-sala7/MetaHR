@@ -17,8 +17,9 @@ namespace DataAccess.Data
         [Required]
         public string EmployeeId { get; set; }
         public virtual Employee Employee { get; set; }
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+        public int NumberOfDays { get; set; }
         public VacationRequestState State { get; set; }
         public string? ReviewerId { get; set; }
         public virtual Employee? Reviewer { get; set; }

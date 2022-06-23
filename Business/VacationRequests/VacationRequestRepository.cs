@@ -73,7 +73,7 @@ namespace Business.VacationRequests
                 DateTime reqPlus1 = cmd.From.Date.AddDays(1);
                 DateTime reqMinus1 = cmd.From.Date.AddDays(-1);
                 bool consecutiveToAnExistingRequest = await _db.VacationRequests.Where(vr => vr.EmployeeId == employeeId)
-                    .AnyAsync(vr => vr.From == reqPlus1 || vr.From == reqMinus1);
+                    .AnyAsync(vr => vr.FromDate == reqPlus1 || vr.FromDate == reqMinus1);
 
                 if (consecutiveToAnExistingRequest)
                 {
@@ -82,7 +82,7 @@ namespace Business.VacationRequests
             }
             var to = cmd.From.Date.AddDays(cmd.NumberOfDays - 1);
             if(await _db.VacationRequests.Where(vr => vr.EmployeeId == employeeId)
-                .AnyAsync(vr => vr.From.Date == cmd.From.Date || vr.To.Date == to))
+                .AnyAsync(vr => vr.FromDate.Date == cmd.From.Date || vr.ToDate.Date == to))
             {
                 return CommandResult.GetErrorResult("You've already made an identical request with the same From/To dates.");
             }
@@ -91,8 +91,8 @@ namespace Business.VacationRequests
                 EmployeeId = employeeId,
                 CreatedAt = DateTime.UtcNow,
                 State = VacationRequestState.Pending,
-                From = cmd.From.Date,
-                To = to
+                FromDate = cmd.From.Date,
+                ToDate = to
             };
             _db.VacationRequests.Add(vacationRequest);
             await _db.SaveChangesAsync();
@@ -144,8 +144,8 @@ namespace Business.VacationRequests
                EmployeeEmail = vr.Employee.Email,
                EmployeeFirstName = vr.Employee.FirstName,
                EmployeeLastName = vr.Employee.LastName,
-               From = vr.From,
-               To = vr.To,
+               From = vr.FromDate,
+               To = vr.ToDate,
                State = vr.State.ToString(),
                DepartmentName = vr.Employee.Department.Name,
                ReviewerId = vr.Reviewer.Id,
