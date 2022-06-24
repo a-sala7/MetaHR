@@ -56,5 +56,14 @@ namespace MetaHR_API.Controllers
             var actionResult = CommandResultResolver.Resolve(cmdResult);
             return actionResult;
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.AdminsAndHR)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            CommandResult cmdResult = await _jobPostingRepo.Delete(id);
+            var actionResult = CommandResultResolver.Resolve(cmdResult);
+            return actionResult;
+        }
     }
 }

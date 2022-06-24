@@ -28,7 +28,7 @@ namespace Business.VacationRequests
             int count = await _db.VacationRequests.CountAsync();
             List<VacationRequestDTO>? reqDtos = await _db
                 .VacationRequests
-                .OrderByDescending(vr => vr.CreatedAt)
+                .OrderByDescending(vr => vr.CreatedAtUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(vr => vr.Employee)
                 .ThenInclude(emp => emp.Department)
@@ -45,7 +45,7 @@ namespace Business.VacationRequests
             List<VacationRequestDTO>? reqDtos = await _db
                 .VacationRequests
                 .Where(vr => vr.EmployeeId == employeeId)
-                .OrderByDescending(vr => vr.CreatedAt)
+                .OrderByDescending(vr => vr.CreatedAtUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Include(vr => vr.Employee)
                 .ThenInclude(emp => emp.Department)
@@ -104,7 +104,7 @@ namespace Business.VacationRequests
             var vacationRequest = new VacationRequest
             {
                 EmployeeId = employeeId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAtUtc = DateTime.UtcNow,
                 State = VacationRequestState.Pending,
                 NumberOfDays = cmd.NumberOfDays,
                 FromDate = cmd.From.Date,
@@ -155,7 +155,7 @@ namespace Business.VacationRequests
            = vr => new VacationRequestDTO
            {
                Id = vr.Id,
-               CreatedAt = vr.CreatedAt,
+               CreatedAt = vr.CreatedAtUtc,
                EmployeeId = vr.EmployeeId,
                EmployeeEmail = vr.Employee.Email,
                EmployeeFirstName = vr.Employee.FirstName,

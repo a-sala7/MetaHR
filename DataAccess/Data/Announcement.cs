@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Data
 {
-    [Index(nameof(CreatedAt))]
+    [Index(nameof(CreatedAtUtc))]
     public class Announcement
     {
         public int Id { get; set; }
@@ -24,7 +24,7 @@ namespace DataAccess.Data
         [MaxLength(5000)]
         public string Content { get; set; }
         
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
 
         public int? DepartmentId { get; set; }
         public virtual Department? Department { get; set; }

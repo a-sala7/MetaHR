@@ -58,7 +58,7 @@ namespace Business.Tickets
                         TimestampUtc = utcnow
                     }
                 },
-                CreatedAt = utcnow,
+                CreatedAtUtc = utcnow,
                 IsOpen = true,
                 IsAwaitingResponse = true
             };
@@ -103,7 +103,7 @@ namespace Business.Tickets
                 .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
-                .OrderByDescending(t => t.CreatedAt)
+                .OrderByDescending(t => t.CreatedAtUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
@@ -121,7 +121,7 @@ namespace Business.Tickets
                 .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(s => s.Department)
-                .OrderByDescending(t => t.CreatedAt)
+                .OrderByDescending(t => t.CreatedAtUtc)
                 .Where(t => t.CreatorId == creatorId)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
@@ -184,7 +184,7 @@ namespace Business.Tickets
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
                 .Where(t => t.IsAwaitingResponse)
-                .OrderByDescending(t => t.CreatedAt)
+                .OrderByDescending(t => t.CreatedAtUtc)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
 
@@ -201,7 +201,7 @@ namespace Business.Tickets
                CreatorName = t.Creator.FirstName + " " + t.Creator.LastName,
                CreatorDepartmentName = t.Creator.Department.Name,
                CreatorPfpURL = t.Creator.ProfilePictureURL,
-               CreatedAt = t.CreatedAt,
+               CreatedAt = t.CreatedAtUtc,
                IsOpen = t.IsOpen,
                IsAwaitingResponse = t.IsAwaitingResponse
            };

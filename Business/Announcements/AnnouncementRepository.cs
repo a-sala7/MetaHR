@@ -40,7 +40,7 @@ namespace Business.Announcements
                 .Announcements
                 .Include(a => a.Author)
                 .Include(a => a.Department)
-                .OrderByDescending(a => a.CreatedAt)
+                .OrderByDescending(a => a.CreatedAtUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(AnnouncementToAnnouncementDTOExpression)
                 .ToListAsync();
@@ -59,7 +59,7 @@ namespace Business.Announcements
                 .Include(a => a.Author)
                 .Include(a => a.Department)
                 .Where(a => a.DepartmentId == departmentId || a.DepartmentId == null)
-                .OrderByDescending(a => a.CreatedAt)
+                .OrderByDescending(a => a.CreatedAtUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(AnnouncementToAnnouncementDTOExpression)
                 .ToListAsync();
@@ -79,7 +79,7 @@ namespace Business.Announcements
                 Title = cmd.Title,
                 Content = cmd.Content,
                 AuthorId = authorId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAtUtc = DateTime.UtcNow,
                 DepartmentId = departmentId
             };
             _db.Announcements.Add(an);
@@ -122,7 +122,7 @@ namespace Business.Announcements
                AuthorId = a.AuthorId,
                AuthorName = a.Author.FirstName + " " + a.Author.LastName,
                AuthorPfpURL = a.Author.ProfilePictureURL,
-               CreatedAt = a.CreatedAt,
+               CreatedAt = a.CreatedAtUtc,
                DepartmentId = a.DepartmentId,
                DepartmentName = a.Department.Name
            };

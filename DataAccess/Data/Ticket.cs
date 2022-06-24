@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Data
 {
-    [Index(nameof(CreatedAt))]
+    [Index(nameof(CreatedAtUtc))]
     public class Ticket
     {
         public int Id { get; set; }
@@ -17,7 +17,7 @@ namespace DataAccess.Data
         public string Subject { get; set; }
         [Required]
         public string CreatorId { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
         public virtual Employee Creator { get; set; }
         public bool IsOpen { get; set; } = true;
         public bool IsAwaitingResponse { get; set; } = true;

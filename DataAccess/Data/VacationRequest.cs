@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Data
 {
-    [Index(nameof(CreatedAt))]
+    [Index(nameof(CreatedAtUtc))]
     public class VacationRequest
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
         [Required]
         public string EmployeeId { get; set; }
         public virtual Employee Employee { get; set; }
