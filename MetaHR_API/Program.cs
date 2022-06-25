@@ -16,6 +16,8 @@ using DataAccess.DbInitializer;
 using MetaHR_API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -27,8 +29,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(opt =>
+builder.Services.AddControllers(cfg =>
+{
+    cfg.Filters.Add(new ValidationActionFilter());
+}).AddJsonOptions(opt =>
    {
        opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
    });
@@ -147,9 +151,13 @@ builder.Services.AddScoped<IFileManager, S3FileManager>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
 builder.Services.AddScoped<IVacationRequestRepository, VacationRequestRepository>();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
-//builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
-builder.Services.AddScoped<IEmailSender, SendinblueEmailSender>();
+builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
+//builder.Services.AddScoped<IEmailSender, SendinblueEmailSender>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

@@ -16,6 +16,7 @@ using Models.Responses;
 using Business.Email;
 using Business.Email.Models;
 using Common.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Accounts
 {
@@ -25,15 +26,17 @@ namespace Business.Accounts
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _db;
         public AccountService(ApiConfiguration apiConfiguration,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender, ApplicationDbContext db)
         {
             _apiConfiguration = apiConfiguration;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _db = db;
         }
 
         public async Task<LoginResponse> Login(LoginCommand cmd)
@@ -50,6 +53,7 @@ namespace Business.Accounts
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var token = await GetToken(user);
+                Employee? emp = await _db.Employees.FirstOrDefaultAsync(e => e.Email == cmd.Email);
                 var userInfo = new LocalUserInfo
                 {
                     Id = user.Id,
@@ -57,6 +61,7 @@ namespace Business.Accounts
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Token = token,
+                    ProfilePictureURL = emp?.ProfilePictureURL,
                     Roles = roles
                 };
                 return LoginResponse.SuccessResponse(userInfo);

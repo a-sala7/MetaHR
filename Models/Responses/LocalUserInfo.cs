@@ -13,6 +13,7 @@ namespace Models.Responses
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Token { get; set; }
+        public string? ProfilePictureURL { get; set; }
         public IEnumerable<string> Roles { get; set; }
 
     }
