@@ -22,6 +22,7 @@ namespace Business.AutoMapper
             CreateMap<JobPosting, JobPostingDTO>();
             CreateMap<Department, DepartmentDTO>();
             CreateMap<Attendance, AttendanceDTO>();
+            CreateMap<JobApplicationNote, JobApplicationNoteDTO>();
 
             CreateMap<CreateJobPostingCommand, JobPosting>();
             CreateMap<UpdateJobPostingCommand, JobPosting>();

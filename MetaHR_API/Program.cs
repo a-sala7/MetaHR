@@ -122,7 +122,7 @@ builder.Services.AddAuthentication(opt =>
 })
     .AddJwtBearer(opt =>
     {
-        byte[] keyBytes = Encoding.ASCII.GetBytes(apiConfiguration.SecretKey);
+        byte[] keyBytes = Encoding.UTF8.GetBytes(apiConfiguration.SecretKey);
         opt.RequireHttpsMetadata = false;
         opt.SaveToken = true;
         opt.TokenValidationParameters = new TokenValidationParameters()
