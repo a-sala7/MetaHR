@@ -210,7 +210,7 @@ namespace MetaHR_API.Controllers
         /// <response code="200">OK</response>
         /// <response code="404">Not Found (Job Application Note with given ID not found)</response>
         /// <response code="401">Unauthorized</response>
-        [HttpDelete("/notes/{noteId}")]
+        [HttpDelete("notes/{noteId}")]
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
         public async Task<IActionResult> DeleteNote(int noteId)
         {
@@ -249,7 +249,7 @@ namespace MetaHR_API.Controllers
         /// <response code="200">OK</response>
         /// <response code="404">Not Found (Job Application Note with given ID not found)</response>
         /// <response code="401">Unauthorized</response>
-        [HttpPost("/notes/update")]
+        [HttpPost("notes/update")]
         [Authorize(Roles = Roles.HRJunior + "," + Roles.HRSenior)]
         public async Task<IActionResult> UpdateNote(UpdateJobApplicationNoteCommand cmd)
         {
