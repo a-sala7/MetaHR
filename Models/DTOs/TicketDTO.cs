@@ -16,6 +16,7 @@ namespace Models.DTOs
         public string CreatorDepartmentName { get; set; }
         public string CreatorPfpURL { get; set; }
         public string LastMessage { get; set; }
+        public DateTime LastMessageAtUtc { get; set; }
         public bool IsAwaitingResponse { get; set; }
         public bool IsOpen { get; set; }
     }

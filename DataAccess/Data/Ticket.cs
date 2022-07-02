@@ -22,5 +22,6 @@ namespace DataAccess.Data
         public bool IsOpen { get; set; } = true;
         public bool IsAwaitingResponse { get; set; } = true;
         public virtual ICollection<TicketMessage> Messages { get; set; }
+        public DateTime LastMessageAtUtc { get; set; }
     }
 }

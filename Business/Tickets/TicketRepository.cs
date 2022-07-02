@@ -98,12 +98,14 @@ namespace Business.Tickets
 
         public async Task<PagedResult<TicketDTO>> GetAll(int pageNumber, int pageSize = 10)
         {
+            await _db.SaveChangesAsync();
+
             var tickets = await _db
                 .Tickets
                 .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(e => e.Department)
-                .OrderByDescending(t => t.CreatedAtUtc)
+                .OrderByDescending(t => t.LastMessageAtUtc)
                 .Paginate(pageNumber: pageNumber, pageSize: pageSize)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
@@ -121,7 +123,7 @@ namespace Business.Tickets
                 .Include(t => t.Messages)
                 .Include(t => t.Creator)
                 .ThenInclude(s => s.Department)
-                .OrderByDescending(t => t.CreatedAtUtc)
+                .OrderByDescending(t => t.LastMessageAtUtc)
                 .Where(t => t.CreatorId == creatorId)
                 .Select(TicketToTicketDTOExpression)
                 .ToListAsync();
@@ -197,6 +199,7 @@ namespace Business.Tickets
                Id = t.Id,
                Subject = t.Subject,
                LastMessage = t.Messages.OrderByDescending(tm => tm.TimestampUtc).Select(tm => tm.Content).First(),
+               LastMessageAtUtc = t.LastMessageAtUtc,
                CreatorId = t.CreatorId,
                CreatorName = t.Creator.FirstName + " " + t.Creator.LastName,
                CreatorDepartmentName = t.Creator.Department.Name,
