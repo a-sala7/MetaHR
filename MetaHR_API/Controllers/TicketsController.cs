@@ -126,6 +126,7 @@ namespace MetaHR_API.Controllers
                     return Unauthorized();
                 }
                 messages.RemoveAll(m => m.IsInternalNote);
+                t.LastMessageAtUtc = messages.OrderByDescending(m => m.TimestampUtc).First().TimestampUtc;
             }
             return Ok(messages);
         }

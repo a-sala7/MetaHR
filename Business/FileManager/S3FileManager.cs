@@ -19,6 +19,18 @@ namespace Business.FileManager
         {
             _client = new AmazonS3Client(RegionEndpoint.EUCentral1);
         }
+        private static void ValidateFolderName(string folderName)
+        {
+            if(folderName.Length > 100)
+            {
+                throw new ArgumentException("Folder name can't be longer than 100 characters.");
+            }
+            string allowed = "qwertyuiopasdfghjklzxcvbnm1234567890-_";
+            if(folderName.Any(c => allowed.Contains(c) == false))
+            {
+                throw new ArgumentException("Invalid folder name.");
+            }
+        }
         public async Task<string> UploadFile(string fileName, Stream stream, string contentType, string folder = "")
         {
             ValidateFolderName(folder);
@@ -82,19 +94,6 @@ namespace Business.FileManager
             };
 
             await _client.DeleteObjectAsync(delRequest);
-        }
-
-        private static void ValidateFolderName(string folderName)
-        {
-            if(folderName.Length > 100)
-            {
-                throw new ArgumentException("Folder name can't be longer than 100 characters.");
-            }
-            string allowed = "qwertyuiopasdfghjklzxcvbnm1234567890-_";
-            if(folderName.Any(c => allowed.Contains(c) == false))
-            {
-                throw new ArgumentException("Invalid folder name.");
-            }
         }
 
         public async Task<string> GetPreSignedURL(string fileName, string folder)

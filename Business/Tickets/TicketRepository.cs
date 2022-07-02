@@ -60,7 +60,8 @@ namespace Business.Tickets
                 },
                 CreatedAtUtc = utcnow,
                 IsOpen = true,
-                IsAwaitingResponse = true
+                IsAwaitingResponse = true,
+                LastMessageAtUtc = utcnow
             };
             _db.Add(ticket);
             await _db.SaveChangesAsync();
@@ -171,6 +172,10 @@ namespace Business.Tickets
             else
             {
                 ticket.IsAwaitingResponse = false;
+            }
+            if (msg.IsInternalNote == false)
+            {
+                ticket.LastMessageAtUtc = msg.TimestampUtc;
             }
             _db.Tickets.Update(ticket);
             _db.TicketMessages.Add(msg);

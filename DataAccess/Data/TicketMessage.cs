@@ -20,7 +20,7 @@ namespace DataAccess.Data
         public Employee Sender { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(1000)]
         public string Content { get; set; }
         public bool IsInternalNote { get; set; }
         public DateTime TimestampUtc { get; set; }

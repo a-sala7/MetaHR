@@ -82,6 +82,12 @@ namespace Business.JobPostings
                     ("JobPosting", id);
             }
 
+            if(await _db.JobApplications.AnyAsync(ja => ja.JobPostingId == id))
+            {
+                return CommandResult.GetErrorResult
+                    ("Can't delete a Job Posting which has applications.");
+            }
+
             _db.JobPostings.Remove(jpInDb);
 
             if (await _db.SaveChangesAsync() > 0)
