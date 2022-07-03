@@ -47,6 +47,8 @@ namespace Business.Employees
         {
             IEnumerable<EmployeeDTO> employees = await _db
                 .Employees
+                .OrderBy(e => e.FirstName)
+                .ThenBy(e => e.LastName)
                 .Select(EmployeeToEmployeeDTOExpression)
                 .ToListAsync();
             return employees;
