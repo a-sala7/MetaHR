@@ -171,7 +171,10 @@ namespace Business.Tickets
             }
             else
             {
-                ticket.IsAwaitingResponse = false;
+                if(msg.IsInternalNote == false)
+                {
+                    ticket.IsAwaitingResponse = false;
+                }
             }
             if (msg.IsInternalNote == false)
             {
