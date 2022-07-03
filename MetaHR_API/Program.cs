@@ -86,7 +86,6 @@ else
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(dbConString);
-    options.EnableSensitiveDataLogging(true);
 });
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

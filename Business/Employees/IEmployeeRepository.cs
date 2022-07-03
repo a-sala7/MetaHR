@@ -20,5 +20,6 @@ namespace Business.Employees
         Task<CommandResult> OnboardEmployee(OnboardEmployeeCommand cmd);
         Task<CommandResult> ChangeProfilePicture(ChangePfpCommand cmd);
         Task<CommandResult> DeleteProfilePicture(string employeeId);
+        Task<CommandResult> UpdateProfile(string employeeId, UpdateProfileCommand cmd);
     }
 }

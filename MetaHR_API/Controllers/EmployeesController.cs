@@ -47,7 +47,7 @@ namespace MetaHR_API.Controllers
                 return NotFound($"Employee with ID {id} not found.");
             }
             //hide DoB & DH from other employees
-            if (User.IsInRole(Roles.Employee))
+            if (User.IsInRole(Roles.Employee) && User.GetId() != id)
             {
                 employee.DateHired = null;
                 employee.DateOfBirth = null;
@@ -185,6 +185,17 @@ namespace MetaHR_API.Controllers
             
 
             var res = await _employeeRepository.DeleteProfilePicture(employeeId);
+            return CommandResultResolver.Resolve(res);
+        }
+        [HttpPost("updateProfile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileCommand cmd)
+        {
+            if(User.IsInRole(Roles.Admin) || User.IsInRole(Roles.AttendanceLogger))
+            {
+                return BadRequest();
+            }
+            var res = await _employeeRepository.UpdateProfile(User.GetId(), cmd);
             return CommandResultResolver.Resolve(res);
         }
     }

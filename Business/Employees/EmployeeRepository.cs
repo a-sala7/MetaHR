@@ -279,6 +279,22 @@ namespace Business.Employees
             return CommandResult.SuccessResult;
         }
 
+        public async Task<CommandResult> UpdateProfile(string employeeId, UpdateProfileCommand cmd)
+        {
+            var emp = await _db.Employees.FirstOrDefaultAsync(e => e.Id==employeeId);
+            if(emp == null)
+            {
+                return CommandResult.GetNotFoundResult("Employee", employeeId);
+            }
+
+            emp.GitHubURL = cmd.GitHubURL;
+            emp.LinkedInURL = cmd.LinkedInURL;
+            emp.PersonalWebsite = cmd.PersonalWebsite;
+
+            await _db.SaveChangesAsync();
+            return CommandResult.SuccessResult;
+        }
+
         private readonly Expression<Func<Employee, EmployeeDTO>> EmployeeToEmployeeDTOExpression
            = e => new EmployeeDTO
            {
