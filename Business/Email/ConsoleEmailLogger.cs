@@ -11,7 +11,7 @@ namespace Business.Email
     {
         public async Task SendOnboardEmail(NewUserEmailModel model)
         {
-            var link = $"https://localhost:3000/onboard?userId={model.UserId}&token={model.PasswordResetToken}";
+            var link = $"http://localhost:3000/onboard?userId={model.UserId}&token={model.PasswordResetToken}";
             link = link.Replace("+", "%2B");
             Console.WriteLine();
             Console.WriteLine($"New user ({model.Email}) registered!");
@@ -21,7 +21,7 @@ namespace Business.Email
 
         public async Task SendPasswordResetEmail(PasswordResetEmailModel model)
         {
-            var link = $"https://localhost:3000/account/resetPassword?userId={model.UserId}&token={model.PasswordResetToken}";
+            var link = $"http://localhost:3000/account/resetPassword?userId={model.UserId}&token={model.PasswordResetToken}";
             link = link.Replace("+", "%2B");
             Console.WriteLine();
             Console.WriteLine($"User {model.Email} resetting their password!");

@@ -17,5 +17,6 @@ namespace Business.Accounts
         Task<CommandResult> ResetPassword(ResetPasswordCommand cmd);
         Task<CommandResult> ChangePassword(ChangePasswordCommand cmd);
         Task<CommandResult> RegisterAttendanceLogger(RegisterAttendanceLoggerCommand cmd);
+        Task<CommandResult> VerifyResetPwdToken(VerifyTokenCommand cmd);
     }
 }

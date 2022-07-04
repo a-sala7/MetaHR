@@ -71,5 +71,12 @@ namespace MetaHR_API.Controllers
             CommandResult res = await _accountService.RegisterAttendanceLogger(cmd);
             return CommandResultResolver.Resolve(res);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyToken(VerifyTokenCommand cmd)
+        {
+            CommandResult res = await _accountService.VerifyResetPwdToken(cmd);
+            return CommandResultResolver.Resolve(res);
+        }
     }
 }

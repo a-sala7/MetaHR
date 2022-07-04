@@ -42,14 +42,14 @@ namespace Business.Accounts
         public async Task<LoginResponse> Login(LoginCommand cmd)
         {
             var user = await _userManager.FindByEmailAsync(cmd.Email);
-            if(user == null)
+            if (user == null)
             {
                 return LoginResponse.ErrorResponse($"User with email {cmd.Email} not found.");
             }
             var signInResult = await _signInManager.PasswordSignInAsync
                 (user, cmd.Password, isPersistent: true, lockoutOnFailure: true);
 
-            if(signInResult.Succeeded)
+            if (signInResult.Succeeded)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var token = await GetToken(user);
@@ -96,7 +96,7 @@ namespace Business.Accounts
 
             IList<string> roles = await _userManager.GetRolesAsync(user);
 
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
@@ -106,7 +106,7 @@ namespace Business.Accounts
 
         private SigningCredentials GetSigningCredentials()
         {
-            SymmetricSecurityKey secret = new (Encoding.UTF8.GetBytes(_apiConfiguration.SecretKey));
+            SymmetricSecurityKey secret = new(Encoding.UTF8.GetBytes(_apiConfiguration.SecretKey));
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
@@ -129,7 +129,7 @@ namespace Business.Accounts
         public async Task<CommandResult> ForgotPassword(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if(user == null)
+            if (user == null)
             {
                 return CommandResult.GetNotFoundResult("User", email);
             }
@@ -196,12 +196,29 @@ namespace Business.Accounts
                 return CommandResult.GetErrorResult(errors);
             }
             var roleResult = await _userManager.AddToRoleAsync(user, Roles.AttendanceLogger);
-            if(roleResult.Succeeded == false)
+            if (roleResult.Succeeded == false)
             {
                 var errors = identityResult.Errors.Select(e => e.Description);
                 return CommandResult.GetErrorResult(errors);
             }
             return CommandResult.SuccessResult;
+        }
+
+        public async Task<CommandResult> VerifyResetPwdToken(VerifyTokenCommand cmd)
+        {
+            var user = await _userManager.FindByIdAsync(cmd.UserId);
+            if (user == null)
+            {
+                return CommandResult.GetNotFoundResult("User", cmd.UserId);
+            }
+
+            string purpose = UserManager<ApplicationUser>.ResetPasswordTokenPurpose;
+            bool success = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, purpose, cmd.Token);
+            if (success)
+            {
+                return CommandResult.SuccessResult;
+            }
+            return CommandResult.GetErrorResult("Invalid token");
         }
     }
 }
