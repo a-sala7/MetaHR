@@ -155,8 +155,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
-//builder.Services.AddScoped<IEmailSender, SendinblueEmailSender>();
+//builder.Services.AddScoped<IEmailSender, ConsoleEmailLogger>();
+builder.Services.AddScoped<IEmailSender, SendinblueEmailSender>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

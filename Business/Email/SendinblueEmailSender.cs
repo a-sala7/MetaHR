@@ -21,7 +21,7 @@ namespace Business.Email
 
         public async Task SendOnboardEmail(NewUserEmailModel model)
         {
-            var link = $"https://internal.metahr.live/onboard/resetPassword?userId={model.UserId}&token={model.PasswordResetToken}";
+            var link = $"https://internal.metahr.live/onboard?userId={model.UserId}&token={model.PasswordResetToken}";
             //+ is special character in query strings, representing a space
             //use proper encoding of + character
             //otherwise it will be converted to a space
