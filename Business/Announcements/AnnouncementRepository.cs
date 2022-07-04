@@ -74,6 +74,13 @@ namespace Business.Announcements
 
         public async Task<CommandResult> Create(CreateAnnouncementCommand cmd, int? departmentId, string authorId)
         {
+            if(departmentId != null)
+            {
+                if(await _db.Departments.AnyAsync(d => d.Id == departmentId.Value) == false)
+                {
+                    return CommandResult.GetNotFoundResult("Department", departmentId.Value);
+                }
+            }
             var an = new Announcement
             {
                 Title = cmd.Title,

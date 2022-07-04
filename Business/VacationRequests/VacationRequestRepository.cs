@@ -132,7 +132,9 @@ namespace Business.VacationRequests
             }
             req.ReviewerId = reviewerId;
             req.State = cmd.State;
-            req.DenialReason = cmd.DenialReason;
+            if(req.State == VacationRequestState.Denied){
+                req.DenialReason = cmd.DenialReason;
+            }
             await _db.SaveChangesAsync();
             return CommandResult.SuccessResult;
         }
