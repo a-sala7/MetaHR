@@ -10,7 +10,8 @@ namespace Models.Commands.JobApplications
 {
     public class CreateJobApplicationCommand
     {
-        public int? JobPostingId { get; set; }
+        [Required]
+        public int JobPostingId { get; set; }
 
         //applicant info
         [Required]

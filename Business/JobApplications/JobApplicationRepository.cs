@@ -112,14 +112,11 @@ namespace Business.JobApplications
         
         public async Task<CommandResult> Create(CreateJobApplicationCommand cmd)
         {
-            if(cmd.JobPostingId != null)
+            JobPosting? jp = await _db.JobPostings
+                .FirstOrDefaultAsync(jp => jp.Id == cmd.JobPostingId);
+            if(jp == null)
             {
-                JobPosting? jp = await _db.JobPostings
-                    .FirstOrDefaultAsync(jp => jp.Id == cmd.JobPostingId.Value);
-                if(jp == null)
-                {
-                    return CommandResult.GetNotFoundResult("Job Posting", cmd.JobPostingId.Value);
-                }
+                return CommandResult.GetNotFoundResult("Job Posting", cmd.JobPostingId);
             }
             var ext = Path.GetExtension(cmd.CvFile.FileName);
             string newFileName = Guid.NewGuid().ToString() + ext;
