@@ -15,6 +15,9 @@ Quick summary of main functions:
 * Tracking of Job Applications and interview process (set stage, take notes, view CV pdf…)
 * Vacation Requests
 
+Check out the front end as well!
+https://github.com/hamdy3212/meta-hr-front
+
 Presentation:  
 https://docs.google.com/presentation/d/1-bGHVhBQ4TqCdsetzE8XjczQ6JpPTOD8s5bw1FffuT0/edit?usp=sharing
 
