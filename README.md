@@ -8,7 +8,8 @@ Quick summary of main functions:
 * Login, Forgot/Change Password
 * Announcements (global or department-specific)
 * Create Departments and assign Employees & Directors to them. Department directors can post announcements to their Departments only.
-* Manage Job Postings for integration with the public external website
+* Manage Job Postings for integration with a public external website
+* Amazon S3 to store Employee profile pictures and securely view/download Job Application CVs via temporary URL
 * List of Employees to facilitate internal contact and collaboration
 * Tickets (created by Employees to request help from HR). HR employees can write internal notes inside a ticket.
 * Integration with python face recognition app to log Employee attendance
